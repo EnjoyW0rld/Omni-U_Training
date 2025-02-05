@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Networking.Transport;
 using Unity.Collections;
+using System.Net;
+using System.Net.NetworkInformation;
+using System.Net.Sockets;
+using System;
 
 public class ServerBehaviour : MonoBehaviour
 {
@@ -11,10 +15,35 @@ public class ServerBehaviour : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        _networkDriver = NetworkDriver.Create();
-        _connections = new NativeList<NetworkConnection>(16, Allocator.Persistent);
 
-        var endpoint = NetworkEndpoint.AnyIpv4.WithPort(7777);
+        
+    }
+    public static string GetLocalIPv4(NetworkInterfaceType _type)
+    {
+        string output = "";
+        foreach (NetworkInterface item in NetworkInterface.GetAllNetworkInterfaces())
+        {
+            if (item.NetworkInterfaceType == _type && item.OperationalStatus == OperationalStatus.Up)
+            {
+                foreach (UnicastIPAddressInformation ip in item.GetIPProperties().UnicastAddresses)
+                {
+                    if (ip.Address.AddressFamily == AddressFamily.InterNetwork)
+                    {
+                        output = ip.Address.ToString();
+                    }
+                }
+            }
+        }
+        return output;
+    }
+    public void StartServer()
+    {
+        _networkDriver = NetworkDriver.Create(new WebSocketNetworkInterface());
+        _connections = new NativeList<NetworkConnection>(16, Allocator.Persistent);
+        //var endpoint = NetworkEndpoint.Parse(NetworkEndpoint.AnyIpv4, 9000);
+        var endpoint = NetworkEndpoint.AnyIpv4.WithPort(9001);
+        endpoint.Family = NetworkFamily.Ipv4;
+        print(endpoint);
         if (_networkDriver.Bind(endpoint) != 0)
         {
             Debug.LogError("Failed to bind to port 7777");
@@ -34,6 +63,7 @@ public class ServerBehaviour : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (!_networkDriver.IsCreated) return;
         _networkDriver.ScheduleUpdate().Complete();
         // Removing old connections
         for (int i = 0; i < _connections.Length; i++)
@@ -42,6 +72,7 @@ public class ServerBehaviour : MonoBehaviour
             {
                 _connections.RemoveAtSwapBack(i);
                 i--;
+                Debug.Log("Removed connection");
             }
         }
         // Accepting new connections

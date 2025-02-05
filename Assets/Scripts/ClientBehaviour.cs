@@ -11,8 +11,8 @@ public class ClientBehaviour : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        _networkDriver = NetworkDriver.Create();
-
+        _networkDriver = NetworkDriver.Create(new WebSocketNetworkInterface());
+        
         //var endpoint = NetworkEndpoint.LoopbackIpv4.WithPort(7777);
         //_connection = _networkDriver.Connect(endpoint);
     }
@@ -20,7 +20,8 @@ public class ClientBehaviour : MonoBehaviour
     {
         if (!_connection.IsCreated)
         {
-            NetworkEndpoint endpoint = NetworkEndpoint.Parse(adress, 7777);
+            NetworkEndpoint endpoint = NetworkEndpoint.Parse(adress, (ushort)9001);
+            endpoint.Family = NetworkFamily.Ipv4;
             _connection = _networkDriver.Connect(endpoint);
         }
     }
