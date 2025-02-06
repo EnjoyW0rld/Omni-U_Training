@@ -6,18 +6,34 @@ using Unity.Collections;
 
 public class ClientBehaviour : MonoBehaviour
 {
-    NetworkDriver _networkDriver;
-    NetworkConnection _connection;
+    private static ClientBehaviour _instance;
+    public static ClientBehaviour Instance { get { return _instance; } }
+
+    private NetworkDriver _networkDriver;
+    private NetworkConnection _connection;
+
+    private void Awake()
+    {
+        if (_instance != null && _instance != this)
+        {
+            Destroy(this.gameObject);
+            return;
+        }
+        _instance = this;
+        DontDestroyOnLoad(gameObject);
+    }
     // Start is called before the first frame update
     void Start()
     {
         _networkDriver = NetworkDriver.Create(new WebSocketNetworkInterface());
-        
-        //var endpoint = NetworkEndpoint.LoopbackIpv4.WithPort(7777);
-        //_connection = _networkDriver.Connect(endpoint);
     }
+    /// <summary>
+    /// Connect to the server passing adress
+    /// </summary>
+    /// <param name="adress"></param>
     public void MakeConnection(string adress)
     {
+        print("Make connection called");
         if (!_connection.IsCreated)
         {
             NetworkEndpoint endpoint = NetworkEndpoint.Parse(adress, (ushort)9001);
@@ -52,11 +68,11 @@ public class ClientBehaviour : MonoBehaviour
             }
             else if (cmd == NetworkEvent.Type.Data)
             {
-                uint value = streamReader.ReadUInt();
-                Debug.Log($"Got the value {value} back");
-
-                _connection.Disconnect(_networkDriver);
-                _connection = default;
+                NativeArray<byte> data = new NativeArray<byte>();
+                NetworkPacket packet = new NetworkPacket(data);
+                print(data.Length);
+                ISerializable obj = packet.Read();
+                print(obj.GetType().FullName);
             }
             else if (cmd == NetworkEvent.Type.Disconnect)
             {
