@@ -11,6 +11,9 @@ public class MenuHandler : MonoBehaviour
     [SerializeField] private ServerBehaviour _serverPrefab;
 
     [SerializeField] private TMP_InputField _ipInputField;
+    [Header("Client prefabs")]
+    [SerializeField] private GameObject _teamChooseScreen;
+    [SerializeField] private GameObject _connectionScreen;
 
     private ClientBehaviour _createdClientPrefab;
     private ServerBehaviour _createdServerPrefab;
@@ -21,6 +24,7 @@ public class MenuHandler : MonoBehaviour
         if (ClientBehaviour.Instance == null)
         {
             _createdClientPrefab = Instantiate(_clientPrefab);
+            ClientBehaviour.Instance.OnConnected.AddListener(ChangeToTeamScreen);
         }
         StartCoroutine(DoNextTick(() => ClientBehaviour.Instance.MakeConnection(_ipInputField.text)));
     }
@@ -34,5 +38,14 @@ public class MenuHandler : MonoBehaviour
         yield return null;
         print("Invoking action");
         action?.Invoke();
+    }
+    private void OnDestroy()
+    {
+        ClientBehaviour.Instance.OnConnected.RemoveListener(ChangeToTeamScreen);
+    }
+    private void ChangeToTeamScreen()
+    {
+        _teamChooseScreen.SetActive(true);
+        _connectionScreen.SetActive(false);
     }
 }

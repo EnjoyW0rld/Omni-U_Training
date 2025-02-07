@@ -10,6 +10,7 @@ public struct UserData
 
     public bool IsCreated { get { return _connection.IsCreated; } }
     public NetworkConnection Connection { get { return _connection; } }
+    public uint TeamNum { get { return _teamNum; } }
 
     public UserData(NetworkConnection pConnection, uint pTeamNum)
     {

@@ -6,9 +6,11 @@ using System.Runtime.Serialization;
 using Unity.Collections;
 using UnityEngine;
 
+/// <summary>
+/// Wrapper for the messages to be sent through the network
+/// </summary>
 public class NetworkPacket
 {
-    //private NativeList<byte> _packetList;
     private BinaryWriter _writer;
     private BinaryReader _reader;
 
@@ -31,8 +33,39 @@ public class NetworkPacket
     }
 
     public void WriteString(string pString) => _writer.Write(pString);
-    public string ReadString() => _reader.ReadString();
+    public void WriteInt(int pInt) => _writer.Write(pInt);
+    public void WriteIntArray(int[] pIntArr)
+    {
+        if (pIntArr == null || pIntArr.Length == 0)
+        {
+            Debug.LogError("Array you passed is null or 0!");
+            return;
+        }
+        WriteInt(pIntArr.Length);
+        for (int i = 0; i < pIntArr.Length; i++)
+        {
+            WriteInt(pIntArr[i]);
+        }
+    }
 
+    public int[] ReadIntArr()
+    {
+        int[] arr = new int[ReadInt()];
+        for (int i = 0; i < arr.Length; i++)
+        {
+            arr[i] = ReadInt();
+        }
+        return arr;
+    }
+    public string ReadString() => _reader.ReadString();
+    public int ReadInt() => _reader.ReadInt32();
+
+
+
+    /// <summary>
+    /// Serializes passed class into BinaryWriter stream
+    /// </summary>
+    /// <param name="pMessage"></param>
     public void Write(ISerializable pMessage)
     {
         _writer.Write(pMessage.GetType().FullName);
@@ -45,7 +78,10 @@ public class NetworkPacket
         obj.DeSerialize(this);
         return obj;
     }
-
+    /// <summary>
+    /// Returns NativeArray of all the written data for this package
+    /// </summary>
+    /// <returns></returns>
     public NativeArray<byte> GetBytes()
     {
         NativeArray<byte> arr = new NativeArray<byte>(((MemoryStream)_writer.BaseStream).ToArray(), Allocator.Persistent);

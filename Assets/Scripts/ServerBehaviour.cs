@@ -19,7 +19,7 @@ public class ServerBehaviour : MonoBehaviour
     private NativeList<UserData> _connections;
 
     private List<NetworkPacket> _packetsToSend;
-
+    
     private void Awake()
     {
         if (_instance != null && _instance != this)
@@ -113,6 +113,7 @@ public class ServerBehaviour : MonoBehaviour
         NetworkConnection connection;
         while ((connection = _networkDriver.Accept()) != default)
         {
+            print(connection.GetHashCode());
             UserData newUser = new UserData(connection, (uint)_connections.Length + 1);
             _connections.Add(newUser);
             Debug.Log("Added new connection");
@@ -155,4 +156,19 @@ public class ServerBehaviour : MonoBehaviour
             }
         }
     }
+
+    // ---------------------
+    // GET FUNCTIONS
+    // ---------------------
+
+    public uint[] GetTeamNumbers()
+    {
+        uint[] teams = new uint[_connections.Length];
+        for (int i = 0; i < _connections.Length; i++)
+        {
+            teams[i] = _connections[i].TeamNum;
+        }
+        return teams;
+    }
+
 }

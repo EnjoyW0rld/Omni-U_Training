@@ -3,7 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Networking.Transport;
 using Unity.Collections;
+using UnityEngine.Events;
 
+/// <summary>
+/// Script for client side that holds connection with the host as well as sends/recieves messages
+/// Is singleton
+/// </summary>
 public class ClientBehaviour : MonoBehaviour
 {
     private static ClientBehaviour _instance;
@@ -11,6 +16,8 @@ public class ClientBehaviour : MonoBehaviour
 
     private NetworkDriver _networkDriver;
     private NetworkConnection _connection;
+
+    public UnityEvent OnConnected;
 
     private void Awake()
     {
@@ -28,7 +35,7 @@ public class ClientBehaviour : MonoBehaviour
         _networkDriver = NetworkDriver.Create(new WebSocketNetworkInterface());
     }
     /// <summary>
-    /// Connect to the server passing adress
+    /// Connect to the server passing adress, uses 9001 port by default
     /// </summary>
     /// <param name="adress"></param>
     public void MakeConnection(string adress)
@@ -61,18 +68,17 @@ public class ClientBehaviour : MonoBehaviour
             if (cmd == NetworkEvent.Type.Connect)
             {
                 Debug.Log("We are now connected to server!");
-                uint value = 1;
-                _networkDriver.BeginSend(_connection, out var writer);
-                writer.WriteUInt(value);
-                _networkDriver.EndSend(writer);
+                OnConnected?.Invoke();
             }
             else if (cmd == NetworkEvent.Type.Data)
             {
-                NativeArray<byte> data = new NativeArray<byte>();
+                print("recieved !");
+                NativeArray<byte> data = new NativeArray<byte>(streamReader.Length,Allocator.Temp);
+               
+                streamReader.ReadBytes(data);
                 NetworkPacket packet = new NetworkPacket(data);
-                print(data.Length);
                 ISerializable obj = packet.Read();
-                print(obj.GetType().FullName);
+                ((NetworkSceneManager)obj).Use();
             }
             else if (cmd == NetworkEvent.Type.Disconnect)
             {
