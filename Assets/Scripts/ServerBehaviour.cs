@@ -12,14 +12,21 @@ using UnityEditor;
 
 public class ServerBehaviour : MonoBehaviour
 {
+    public const int TEAM_NUMBER = 3;
+
+    public static bool IsThisUserServer { get { return _instance != null; } }
     public static ServerBehaviour Instance { get { return _instance; } }
     private static ServerBehaviour _instance;
 
     private NetworkDriver _networkDriver;
-    private NativeList<UserData> _connections;
+    private NativeList<NetworkConnection> _connections;
+    private Dictionary<int, NetworkConnection> _teamConnectionDict;
+    private UserData[] _userDatas;
 
     private List<NetworkPacket> _packetsToSend;
-    
+
+    public int ConnectionsCount { get { return _connections.Length; } }
+
     private void Awake()
     {
         if (_instance != null && _instance != this)
@@ -29,7 +36,17 @@ public class ServerBehaviour : MonoBehaviour
         }
         _instance = this;
         DontDestroyOnLoad(gameObject);
+
+        // Initializing arrays
         _packetsToSend = new List<NetworkPacket>();
+        _userDatas = new UserData[TEAM_NUMBER];
+        for (int i = 0; i < TEAM_NUMBER; i++)
+        {
+            _userDatas[i] = new UserData((uint)i + 1);
+        }
+        _teamConnectionDict = new Dictionary<int, NetworkConnection> {  {1, (NetworkConnection)default},
+                                                                        {2, (NetworkConnection)default},
+                                                                        {3, (NetworkConnection)default}};
     }
     public static string GetLocalIPv4(NetworkInterfaceType _type)
     {
@@ -57,7 +74,7 @@ public class ServerBehaviour : MonoBehaviour
             return;
         }
         _networkDriver = NetworkDriver.Create(new WebSocketNetworkInterface());
-        _connections = new NativeList<UserData>(16, Allocator.Persistent);
+        _connections = new NativeList<NetworkConnection>(16, Allocator.Persistent);
         var endpoint = NetworkEndpoint.AnyIpv4.WithPort(9001);
         endpoint.Family = NetworkFamily.Ipv4;
 
@@ -71,14 +88,7 @@ public class ServerBehaviour : MonoBehaviour
         StartCoroutine(MenuHandler.DoNextTick(() => SimpleSceneManager.ChangeScene("MasterScreen")));
     }
 
-    private void OnDestroy()
-    {
-        if (_networkDriver.IsCreated)
-        {
-            _networkDriver.Dispose();
-            _connections.Dispose();
-        }
-    }
+
     private void RemoveFaultyConnections()
     {
         // Removing old connections
@@ -113,9 +123,8 @@ public class ServerBehaviour : MonoBehaviour
         NetworkConnection connection;
         while ((connection = _networkDriver.Accept()) != default)
         {
-            print(connection.GetHashCode());
-            UserData newUser = new UserData(connection, (uint)_connections.Length + 1);
-            _connections.Add(newUser);
+            //UserData newUser = new UserData(connection, (uint)_connections.Length + 1);
+            _connections.Add(connection);
             Debug.Log("Added new connection");
         }
     }
@@ -125,7 +134,7 @@ public class ServerBehaviour : MonoBehaviour
         {
             for (int i = 0; i < _connections.Length; i++)
             {
-                _networkDriver.BeginSend(NetworkPipeline.Null, _connections[i].Connection, out DataStreamWriter writer);
+                _networkDriver.BeginSend(NetworkPipeline.Null, _connections[i], out DataStreamWriter writer);
                 writer.WriteBytes(_packetsToSend[0].GetBytes());
                 _networkDriver.EndSend(writer);
             }
@@ -139,12 +148,16 @@ public class ServerBehaviour : MonoBehaviour
         {
             DataStreamReader stream;
             NetworkEvent.Type cmd;
-            while ((cmd = _networkDriver.PopEventForConnection(_connections[i].Connection, out stream)) != NetworkEvent.Type.Empty)
+            while ((cmd = _networkDriver.PopEventForConnection(_connections[i], out stream)) != NetworkEvent.Type.Empty)
             {
                 if (cmd == NetworkEvent.Type.Data)
                 {
-                    uint number = stream.ReadUInt();
-                    Debug.Log($"Got {number} from client, adding 2 to it");
+                    print($"Is stream null - {stream.IsCreated} and has data - {stream.Length}");
+                    NetworkPacket packet = new NetworkPacket(stream);
+                    ISerializable data = packet.Read();
+                    data.Use();
+                    //uint number = stream.ReadUInt();
+                    //Debug.Log($"Got {number} from client, adding 2 to it");
 
                 }
                 else if (cmd == NetworkEvent.Type.Disconnect)
@@ -157,18 +170,30 @@ public class ServerBehaviour : MonoBehaviour
         }
     }
 
+    private void OnDestroy()
+    {
+        if (_networkDriver.IsCreated)
+        {
+            _networkDriver.Dispose();
+            _connections.Dispose();
+        }
+    }
     // ---------------------
     // GET FUNCTIONS
     // ---------------------
 
-    public uint[] GetTeamNumbers()
+    public bool[] GetTeamNumbers()
     {
-        uint[] teams = new uint[_connections.Length];
-        for (int i = 0; i < _connections.Length; i++)
+        bool[] arr = new bool[TEAM_NUMBER];
+        for (int i = 0; i < TEAM_NUMBER; i++)
         {
-            teams[i] = _connections[i].TeamNum;
+            //arr[i] = _teamConnectionDict[i + 1] == default;
+            //teams[i] = _connections[i].TeamNum;
         }
-        return teams;
+        arr[0] = true;
+        arr[1] = false;
+        arr[2] = true;
+        return arr;
     }
 
 }

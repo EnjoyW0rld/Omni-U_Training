@@ -4,6 +4,7 @@ using UnityEngine;
 using Unity.Networking.Transport;
 using Unity.Collections;
 using UnityEngine.Events;
+using Unity.VisualScripting;
 
 /// <summary>
 /// Script for client side that holds connection with the host as well as sends/recieves messages
@@ -19,6 +20,8 @@ public class ClientBehaviour : MonoBehaviour
 
     public UnityEvent OnConnected;
 
+    private List<NetworkPacket> _scheduledPackets;
+
     private void Awake()
     {
         if (_instance != null && _instance != this)
@@ -33,6 +36,7 @@ public class ClientBehaviour : MonoBehaviour
     void Start()
     {
         _networkDriver = NetworkDriver.Create(new WebSocketNetworkInterface());
+        _scheduledPackets = new List<NetworkPacket>();
     }
     /// <summary>
     /// Connect to the server passing adress, uses 9001 port by default
@@ -60,7 +64,28 @@ public class ClientBehaviour : MonoBehaviour
         {
             return;
         }
-
+        ReadData();
+        SendData();
+    }
+    public void SchedulePackage(NetworkPacket pPacket)
+    {
+        if (!_connection.IsCreated) return;
+        print("Package successfully scheduled");
+        _scheduledPackets.Add(pPacket);
+    }
+    private void SendData()
+    {
+        if (_scheduledPackets == null || _scheduledPackets.Count == 0) return;
+        for (int i = 0; i < _scheduledPackets.Count; i++)
+        {
+            _networkDriver.BeginSend(NetworkPipeline.Null, _connection, out DataStreamWriter writer);
+            writer.WriteBytes(_scheduledPackets[i].GetBytes());
+            _networkDriver.EndSend(writer);
+        }
+        _scheduledPackets.Clear();
+    }
+    private void ReadData()
+    {
         DataStreamReader streamReader;
         NetworkEvent.Type cmd;
         while ((cmd = _connection.PopEvent(_networkDriver, out streamReader)) != NetworkEvent.Type.Empty)
@@ -73,12 +98,15 @@ public class ClientBehaviour : MonoBehaviour
             else if (cmd == NetworkEvent.Type.Data)
             {
                 print("recieved !");
-                NativeArray<byte> data = new NativeArray<byte>(streamReader.Length,Allocator.Temp);
-               
-                streamReader.ReadBytes(data);
+                NetworkPacket pPacket = new NetworkPacket(streamReader);
+                ISerializable data = pPacket.Read();
+                data.Use();
+
+                //NativeArray<byte> data = new NativeArray<byte>(streamReader.Length, Allocator.Temp);
+                /*streamReader.ReadBytes(data);
                 NetworkPacket packet = new NetworkPacket(data);
                 ISerializable obj = packet.Read();
-                ((NetworkSceneManager)obj).Use();
+                ((NetworkSceneManager)obj).Use();*/
             }
             else if (cmd == NetworkEvent.Type.Disconnect)
             {

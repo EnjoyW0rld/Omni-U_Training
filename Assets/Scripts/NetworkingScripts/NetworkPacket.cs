@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization;
 using Unity.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 
 /// <summary>
@@ -26,6 +27,14 @@ public class NetworkPacket
     {
         _reader = new BinaryReader(new MemoryStream(pObject));
     }
+    public NetworkPacket(DataStreamReader pStreamReader)
+    {
+        NativeArray<byte> data = new NativeArray<byte>(pStreamReader.Length, Allocator.Temp);
+        pStreamReader.ReadBytes(data);
+
+        _reader = new BinaryReader(new MemoryStream(data.ToArray()));
+
+    }
     ~NetworkPacket()
     {
         _writer.Dispose();
@@ -34,6 +43,21 @@ public class NetworkPacket
 
     public void WriteString(string pString) => _writer.Write(pString);
     public void WriteInt(int pInt) => _writer.Write(pInt);
+    public void WriteUInt(uint pInt) => _writer.Write(pInt);
+    public void WriteBool(bool pBool) => _writer.Write(pBool);
+    public void WriteUIntArray(uint[] pIntArr)
+    {
+        if (pIntArr == null || pIntArr.Length == 0)
+        {
+            Debug.LogError("Array you passed is null or 0!");
+            return;
+        }
+        WriteInt(pIntArr.Length);
+        for (int i = 0; i < pIntArr.Length; i++)
+        {
+            WriteUInt(pIntArr[i]);
+        }
+    }
     public void WriteIntArray(int[] pIntArr)
     {
         if (pIntArr == null || pIntArr.Length == 0)
@@ -47,6 +71,20 @@ public class NetworkPacket
             WriteInt(pIntArr[i]);
         }
     }
+    public void WriteBoolArray(bool[] pBoolArr)
+    {
+        if (pBoolArr == null || pBoolArr.Length == 0)
+        {
+            Debug.LogError("Array you passed is null or 0!");
+            return;
+        }
+
+        WriteInt(pBoolArr.Length);
+        for (int i = 0; i < pBoolArr.Length; i++)
+        {
+            WriteBool(pBoolArr[i]);
+        }
+    }
 
     public int[] ReadIntArr()
     {
@@ -57,6 +95,27 @@ public class NetworkPacket
         }
         return arr;
     }
+    public uint[] ReadUIntArr()
+    {
+        uint[] arr = new uint[ReadInt()];
+        for (int i = 0; i < arr.Length; i++)
+        {
+            arr[i] = ReadUInt();
+        }
+        return arr;
+    }
+    public bool[] ReadBoolArr()
+    {
+        bool[] arr = new bool[ReadInt()];
+        for (int i = 0; i < arr.Length; i++)
+        {
+            arr[i] = ReadBool();
+        }
+        return arr;
+    }
+
+    public bool ReadBool() => _reader.ReadBoolean();
+    public uint ReadUInt() => _reader.ReadUInt32();
     public string ReadString() => _reader.ReadString();
     public int ReadInt() => _reader.ReadInt32();
 

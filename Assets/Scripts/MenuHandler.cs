@@ -41,7 +41,8 @@ public class MenuHandler : MonoBehaviour
     }
     private void OnDestroy()
     {
-        ClientBehaviour.Instance.OnConnected.RemoveListener(ChangeToTeamScreen);
+        if (ClientBehaviour.Instance != null)
+            ClientBehaviour.Instance.OnConnected.RemoveListener(ChangeToTeamScreen);
     }
     private void ChangeToTeamScreen()
     {
