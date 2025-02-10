@@ -6,6 +6,7 @@ public class TeamSelection : MonoBehaviour
 {
     private const int TEAMS_COUNT = 3;
     [SerializeField] private GameObject[] _teamButtons;
+
     //private bool[] _teamsInUse;
 
     private void Start()
@@ -14,7 +15,6 @@ public class TeamSelection : MonoBehaviour
         {
             TeamSelectionContainer accessContainer = new TeamSelectionContainer(TeamSelectionContainer.Instruction.TeamAccessibility);
             NetworkPacket accessPackage = new NetworkPacket();
-            //accessContainer.Serialize(accessPackage);
             accessPackage.Write(accessContainer);
             ClientBehaviour.Instance.SchedulePackage(accessPackage);
             Debug.Log("Sending access package");
@@ -25,7 +25,7 @@ public class TeamSelection : MonoBehaviour
     {
         if (ServerBehaviour.IsThisUserServer)
         {
-            MasterUse();
+            //MasterUse();
         }
         else
         {
@@ -43,14 +43,13 @@ public class TeamSelection : MonoBehaviour
             _teamButtons[i].SetActive(pContainer.TeamsInUse[i]);
         }
     }
-    private void MasterUse()
+    public void ConnectToTeam(int pTeamID)
     {
-        /*if (_instruction == Instruction.TeamAccessibility)
-        {
-            NetworkPacket teamsInUsePacket = new NetworkPacket();
-            teamsInUsePacket.Write(this);
+        TeamSelectionContainer cont = new TeamSelectionContainer(TeamSelectionContainer.Instruction.ConnectRequest);
+        cont.TeamId = pTeamID;
+        NetworkPacket pack = new NetworkPacket();
+        pack.Write(cont);
 
-            ServerBehaviour.Instance.ScheduleMessage(teamsInUsePacket);
-        }*/
+        ClientBehaviour.Instance.SchedulePackage(pack);
     }
 }

@@ -22,6 +22,7 @@ public class ServerBehaviour : MonoBehaviour
     private NativeList<NetworkConnection> _connections;
     private Dictionary<int, NetworkConnection> _teamConnectionDict;
     private UserData[] _userDatas;
+    private NetworkConnection _currentReadConnetion;
 
     private List<NetworkPacket> _packetsToSend;
 
@@ -152,6 +153,7 @@ public class ServerBehaviour : MonoBehaviour
             {
                 if (cmd == NetworkEvent.Type.Data)
                 {
+                    _currentReadConnetion = _connections[i];
                     print($"Is stream null - {stream.IsCreated} and has data - {stream.Length}");
                     NetworkPacket packet = new NetworkPacket(stream);
                     ISerializable data = packet.Read();
@@ -168,6 +170,12 @@ public class ServerBehaviour : MonoBehaviour
                 }
             }
         }
+        _currentReadConnetion = default;
+    }
+    public void AssignConnection(NetworkConnection pConn, int pTeamId)
+    {
+        _teamConnectionDict[pTeamId] = pConn;
+        Debug.Log("Assigned connection for team " + pTeamId);
     }
 
     private void OnDestroy()
@@ -187,13 +195,16 @@ public class ServerBehaviour : MonoBehaviour
         bool[] arr = new bool[TEAM_NUMBER];
         for (int i = 0; i < TEAM_NUMBER; i++)
         {
-            //arr[i] = _teamConnectionDict[i + 1] == default;
+            arr[i] = _teamConnectionDict[i + 1] == default;
             //teams[i] = _connections[i].TeamNum;
         }
-        arr[0] = true;
+        /*arr[0] = true;
         arr[1] = false;
-        arr[2] = true;
+        arr[2] = true;*/
         return arr;
     }
-
+    public NetworkConnection GetCurrentConnection()
+    {
+        return _currentReadConnetion;
+    }
 }
