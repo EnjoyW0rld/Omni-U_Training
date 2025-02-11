@@ -69,7 +69,7 @@ public class ClientBehaviour : MonoBehaviour
     }
     public void SchedulePackage(NetworkPacket pPacket)
     {
-        if (!_connection.IsCreated) return;
+            if (!_connection.IsCreated) return;
         print("Package successfully scheduled");
         _scheduledPackets.Add(pPacket);
     }

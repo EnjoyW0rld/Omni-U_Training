@@ -9,10 +9,11 @@ using System.Net.Sockets;
 using System;
 using UnityEngine.SocialPlatforms.Impl;
 using UnityEditor;
+using System.Runtime.CompilerServices;
 
 public class ServerBehaviour : MonoBehaviour
 {
-    public const int TEAM_NUMBER = 3;
+    public const int TEAMS_COUNT = 3;
 
     public static bool IsThisUserServer { get { return _instance != null; } }
     public static ServerBehaviour Instance { get { return _instance; } }
@@ -24,7 +25,7 @@ public class ServerBehaviour : MonoBehaviour
     private UserData[] _userDatas;
     private NetworkConnection _currentReadConnetion;
 
-    private List<NetworkPacket> _packetsToSend;
+    private List<ScheduledMessage> _packetsToSend;
 
     public int ConnectionsCount { get { return _connections.Length; } }
 
@@ -39,9 +40,9 @@ public class ServerBehaviour : MonoBehaviour
         DontDestroyOnLoad(gameObject);
 
         // Initializing arrays
-        _packetsToSend = new List<NetworkPacket>();
-        _userDatas = new UserData[TEAM_NUMBER];
-        for (int i = 0; i < TEAM_NUMBER; i++)
+        _packetsToSend = new List<ScheduledMessage>();
+        _userDatas = new UserData[TEAMS_COUNT];
+        for (int i = 0; i < TEAMS_COUNT; i++)
         {
             _userDatas[i] = new UserData((uint)i + 1);
         }
@@ -49,24 +50,11 @@ public class ServerBehaviour : MonoBehaviour
                                                                         {2, (NetworkConnection)default},
                                                                         {3, (NetworkConnection)default}};
     }
-    public static string GetLocalIPv4(NetworkInterfaceType _type)
+    private void Start()
     {
-        string output = "";
-        foreach (NetworkInterface item in NetworkInterface.GetAllNetworkInterfaces())
-        {
-            if (item.NetworkInterfaceType == _type && item.OperationalStatus == OperationalStatus.Up)
-            {
-                foreach (UnicastIPAddressInformation ip in item.GetIPProperties().UnicastAddresses)
-                {
-                    if (ip.Address.AddressFamily == AddressFamily.InterNetwork)
-                    {
-                        output = ip.Address.ToString();
-                    }
-                }
-            }
-        }
-        return output;
+        Application.runInBackground = true;
     }
+
     public void StartServer()
     {
         if (_networkDriver.IsCreated)
@@ -114,10 +102,15 @@ public class ServerBehaviour : MonoBehaviour
         SendData();
     }
 
-    public void ScheduleMessage(NetworkPacket pPacket)
+    public void ScheduleMessage(NetworkPacket pPacket, NetworkConnection pConn)
     {
-        _packetsToSend.Add(pPacket);
+        _packetsToSend.Add(new ScheduledMessage(pPacket, pConn));
     }
+    public void ScheduleMessage(NetworkPacket pPacket, int pTeamID = -1)
+    {
+        _packetsToSend.Add(new ScheduledMessage(pPacket, pTeamID));
+    }
+
     private void AcceptIncomingConnections()
     {
         // Accepting new connections
@@ -131,17 +124,37 @@ public class ServerBehaviour : MonoBehaviour
     }
     private void SendData()
     {
-        if (_packetsToSend.Count > 0)
+        if (_packetsToSend.Count == 0) return;
+
+        for (int i = 0; i < _packetsToSend.Count; i++)
         {
-            for (int i = 0; i < _connections.Length; i++)
+            if (_packetsToSend[i].IsSendToAll)
             {
-                _networkDriver.BeginSend(NetworkPipeline.Null, _connections[i], out DataStreamWriter writer);
-                writer.WriteBytes(_packetsToSend[0].GetBytes());
-                _networkDriver.EndSend(writer);
+                for (int t = 0; t < _connections.Length; t++)
+                {
+                    if (!_connections[t].IsCreated || _connections[t] == default) continue;
+                    _networkDriver.BeginSend(NetworkPipeline.Null, _connections[t], out DataStreamWriter dataWriter);
+                    dataWriter.WriteBytes(_packetsToSend[i].Packet.GetBytes());
+                    _networkDriver.EndSend(dataWriter);
+
+                }
+                continue;
             }
-            _packetsToSend.RemoveAt(0);
+
+            // Setting NetworkConnection based on the values in the current packet
+            NetworkConnection conn;
+            if (_packetsToSend[i].TeamID != -1) conn = _teamConnectionDict[_packetsToSend[i].TeamID];
+            else conn = _packetsToSend[i].Connection;
+
+            _networkDriver.BeginSend(NetworkPipeline.Null, _connections[i], out DataStreamWriter writer);
+            writer.WriteBytes(_packetsToSend[i].Packet.GetBytes());
+            _networkDriver.EndSend(writer);
         }
+
     }
+    /// <summary>
+    /// Dispatches and handles all the incoming messages
+    /// </summary>
     private void ReadIncomingData()
     {
         // Reading incoming data
@@ -154,12 +167,9 @@ public class ServerBehaviour : MonoBehaviour
                 if (cmd == NetworkEvent.Type.Data)
                 {
                     _currentReadConnetion = _connections[i];
-                    print($"Is stream null - {stream.IsCreated} and has data - {stream.Length}");
                     NetworkPacket packet = new NetworkPacket(stream);
                     ISerializable data = packet.Read();
                     data.Use();
-                    //uint number = stream.ReadUInt();
-                    //Debug.Log($"Got {number} from client, adding 2 to it");
 
                 }
                 else if (cmd == NetworkEvent.Type.Disconnect)
@@ -186,25 +196,62 @@ public class ServerBehaviour : MonoBehaviour
             _connections.Dispose();
         }
     }
+    public static string GetLocalIPv4(NetworkInterfaceType _type)
+    {
+        string output = "";
+        foreach (NetworkInterface item in NetworkInterface.GetAllNetworkInterfaces())
+        {
+            if (item.NetworkInterfaceType == _type && item.OperationalStatus == OperationalStatus.Up)
+            {
+                foreach (UnicastIPAddressInformation ip in item.GetIPProperties().UnicastAddresses)
+                {
+                    if (ip.Address.AddressFamily == AddressFamily.InterNetwork)
+                    {
+                        output = ip.Address.ToString();
+                    }
+                }
+            }
+        }
+        return output;
+    }
+
     // ---------------------
     // GET FUNCTIONS
     // ---------------------
 
     public bool[] GetTeamNumbers()
     {
-        bool[] arr = new bool[TEAM_NUMBER];
-        for (int i = 0; i < TEAM_NUMBER; i++)
+        bool[] arr = new bool[TEAMS_COUNT];
+        for (int i = 0; i < TEAMS_COUNT; i++)
         {
             arr[i] = _teamConnectionDict[i + 1] == default;
-            //teams[i] = _connections[i].TeamNum;
         }
-        /*arr[0] = true;
-        arr[1] = false;
-        arr[2] = true;*/
         return arr;
     }
     public NetworkConnection GetCurrentConnection()
     {
         return _currentReadConnetion;
+    }
+
+    private struct ScheduledMessage
+    {
+        public NetworkPacket Packet;
+        public NetworkConnection Connection;
+        public int TeamID;
+        public bool IsSendToAll { get { return TeamID == -1 && Connection == default; } }
+
+        public ScheduledMessage(NetworkPacket pPacket, NetworkConnection pConn)
+        {
+            Packet = pPacket;
+            Connection = pConn;
+            TeamID = -1;
+        }
+        public ScheduledMessage(NetworkPacket pPacket, int pTeamID = -1)
+        {
+            Packet = pPacket;
+            Connection = default;
+            TeamID = pTeamID;
+        }
+
     }
 }

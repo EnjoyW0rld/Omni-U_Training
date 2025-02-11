@@ -7,7 +7,7 @@ public class SimpleSceneManager : MonoBehaviour
 {
     public static void ChangeScene(string pSceneName)
     {
-            SceneManager.LoadScene(pSceneName);
+        SceneManager.LoadScene(pSceneName);
         if ((SceneManager.GetSceneByName(pSceneName)).IsValid())
         {
         }

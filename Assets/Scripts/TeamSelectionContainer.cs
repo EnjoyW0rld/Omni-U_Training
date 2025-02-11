@@ -31,7 +31,7 @@ public class TeamSelectionContainer : ISerializable
             TeamId = pPacket.ReadInt();
         }
     }
-
+    
     public void Serialize(NetworkPacket pPacket)
     {
         pPacket.WriteInt((int)_instruction);
