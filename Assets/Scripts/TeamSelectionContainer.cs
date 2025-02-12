@@ -1,16 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using Unity.Networking.Transport;
 using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class TeamSelectionContainer : ISerializable
+public class TeamSelectionContainer : RCPBase, ISerializable
 {
     public bool[] TeamsInUse;
     public int TeamId;
 
-    public enum Instruction { TeamAccessibility, ConnectRequest }
+    public enum Instruction { TeamAccessibility, ConnectRequest, RCP }
     private Instruction _instruction;
 
     public TeamSelectionContainer(Instruction pInstruction)
@@ -30,8 +31,13 @@ public class TeamSelectionContainer : ISerializable
         {
             TeamId = pPacket.ReadInt();
         }
+        if (_instruction == Instruction.RCP)
+        {
+            //RCPName = pPacket.ReadString();
+            UseRCP(pPacket);
+        }
     }
-    
+
     public void Serialize(NetworkPacket pPacket)
     {
         pPacket.WriteInt((int)_instruction);
@@ -44,6 +50,11 @@ public class TeamSelectionContainer : ISerializable
         {
             pPacket.WriteInt(TeamId);
         }
+        if (_instruction == Instruction.RCP)
+        {
+            pPacket.WriteString(RCPName);
+            //UseRCP(pPacket);
+        }
     }
 
     public void Use()
@@ -53,11 +64,7 @@ public class TeamSelectionContainer : ISerializable
             switch (_instruction)
             {
                 case Instruction.TeamAccessibility:
-                    Debug.Log("Sending available teams");
-                    TeamSelectionContainer cont = new TeamSelectionContainer(Instruction.TeamAccessibility);
-                    NetworkPacket packet = new NetworkPacket();
-                    packet.Write(cont);
-                    ServerBehaviour.Instance.ScheduleMessage(packet);
+                    SendTeamsAvailability();
                     break;
                 case Instruction.ConnectRequest:
                     NetworkConnection conn = ServerBehaviour.Instance.GetCurrentConnection();
@@ -70,5 +77,23 @@ public class TeamSelectionContainer : ISerializable
         {
             GameObject.FindObjectOfType<TeamSelection>().Use(this);
         }
+    }
+    private void SendTeamsAvailability()
+    {
+        Debug.Log("Sending available teams");
+        TeamSelectionContainer cont = new TeamSelectionContainer(Instruction.TeamAccessibility);
+        NetworkPacket packet = new NetworkPacket();
+        packet.Write(cont);
+        ServerBehaviour.Instance.ScheduleMessage(packet);
+    }
+    [MyRCP]
+    public void SendTeamNumber(int pTeam)
+    {
+
+    }
+    [MyRCP]
+    public void TestCase()
+    {
+        Debug.Log("Called using RCP");
     }
 }

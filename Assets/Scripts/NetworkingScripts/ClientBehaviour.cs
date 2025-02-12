@@ -5,6 +5,7 @@ using Unity.Networking.Transport;
 using Unity.Collections;
 using UnityEngine.Events;
 using Unity.VisualScripting;
+using System.ComponentModel;
 
 /// <summary>
 /// Script for client side that holds connection with the host as well as sends/recieves messages
@@ -50,6 +51,8 @@ public class ClientBehaviour : MonoBehaviour
             NetworkEndpoint endpoint = NetworkEndpoint.Parse(adress, (ushort)9001);
             endpoint.Family = NetworkFamily.Ipv4;
             _connection = _networkDriver.Connect(endpoint);
+
+            
         }
     }
     private void OnDestroy()
@@ -94,6 +97,7 @@ public class ClientBehaviour : MonoBehaviour
             {
                 Debug.Log("We are now connected to server!");
                 OnConnected?.Invoke();
+               
             }
             else if (cmd == NetworkEvent.Type.Data)
             {

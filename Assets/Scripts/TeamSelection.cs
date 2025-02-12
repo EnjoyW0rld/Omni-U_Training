@@ -35,8 +35,8 @@ public class TeamSelection : MonoBehaviour
 
     private void ClientUse(TeamSelectionContainer pContainer)
     {
-        if (pContainer.TeamsInUse == null || pContainer.TeamsInUse.Length < 0) return;
 
+        if (pContainer.TeamsInUse == null || pContainer.TeamsInUse.Length < 0) return;
         for (int i = 0; i < TEAMS_COUNT; i++)
         {
             Debug.Log("Removing unised teams");
