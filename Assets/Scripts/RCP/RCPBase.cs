@@ -5,10 +5,19 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.VisualScripting.FullSerializer;
 
+/// <summary>
+/// Inheriting from the class will enable usability of the RCP system
+/// To make specific function to be an RCP function mark it with attribute [MyRCP]
+/// Keep in mind that RCP are very abstract and can cause a problem if parameters that are passed are wrong type or
+/// in the wrong order
+/// </summary>
 public class RCPBase
 {
     private static Dictionary<string, MethodInfo> methods;
     public string RCPName;
+    /// <summary>
+    /// Finds and registers methods in the current class that are marked with attribute
+    /// </summary>
     public void RegisterMethods()
     {
         if (methods == null) methods = new Dictionary<string, MethodInfo>();
@@ -21,22 +30,29 @@ public class RCPBase
             }
         }
     }
+    /// <summary>
+    /// Function will read the values from NetworkPacket and call the designated function if specified
+    /// </summary>
+    /// <param name="pPacket"></param>
     public void UseRCP(NetworkPacket pPacket)
     {
-        Debug.Log("Recieved rcp");
         RCPName = pPacket.ReadString();
         MethodInfo method = methods[RCPName];
-        if (method != null)
+        ParameterInfo[] parameters = method.GetParameters();
+
+        object[] args = null;
+        if (parameters != null && parameters.Length > 0)
         {
-            method.Invoke(this, new object[0]);
+            args = new object[parameters.Length];
+            for (int i = 0; i < parameters.Length; i++)
+            {
+                args[i] = pPacket.ReadByType(parameters[i].ParameterType);
+                Debug.Log("Args " + args[i].ToString());
+            }
         }
-    }
-    public void UseRCP(string pName)
-    {
-        MethodInfo method = methods[pName];
         if (method != null)
         {
-            method.Invoke(this, new object[0]);
+            method.Invoke(this, args);
         }
     }
 }

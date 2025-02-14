@@ -118,8 +118,24 @@ public class NetworkPacket
     public uint ReadUInt() => _reader.ReadUInt32();
     public string ReadString() => _reader.ReadString();
     public int ReadInt() => _reader.ReadInt32();
-
-
+    public object ReadByType(Type type)
+    {
+        object obj = null;
+        switch (Type.GetTypeCode(type))
+        {
+            case TypeCode.Int32:
+                obj = _reader.ReadInt32();
+                break;
+            case TypeCode.Boolean:
+                obj = _reader.ReadBoolean();
+                break;
+            case TypeCode.String:
+                obj = _reader.ReadString();
+                break;
+        }
+        Debug.Log("obj is " + obj);
+        return obj;
+    }
 
     /// <summary>
     /// Serializes passed class into BinaryWriter stream
@@ -143,7 +159,7 @@ public class NetworkPacket
     /// <returns></returns>
     public NativeArray<byte> GetBytes()
     {
-        NativeArray<byte> arr = new NativeArray<byte>(((MemoryStream)_writer.BaseStream).ToArray(), Allocator.Persistent);
+        NativeArray<byte> arr = new NativeArray<byte>(((MemoryStream)_writer.BaseStream).ToArray(), Allocator.Temp);
         return arr;
     }
 }

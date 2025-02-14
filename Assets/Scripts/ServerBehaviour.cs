@@ -126,6 +126,7 @@ public class ServerBehaviour : MonoBehaviour
     {
         if (_packetsToSend.Count == 0) return;
 
+        //Sends data to every connection
         for (int i = 0; i < _packetsToSend.Count; i++)
         {
             if (_packetsToSend[i].IsSendToAll)
@@ -150,6 +151,7 @@ public class ServerBehaviour : MonoBehaviour
             writer.WriteBytes(_packetsToSend[i].Packet.GetBytes());
             _networkDriver.EndSend(writer);
         }
+        _packetsToSend.Clear();
 
     }
     /// <summary>
@@ -175,8 +177,16 @@ public class ServerBehaviour : MonoBehaviour
                 else if (cmd == NetworkEvent.Type.Disconnect)
                 {
                     Debug.Log("Client disconnected from the server");
+                    for (int k = 1; k < _teamConnectionDict.Count + 1; k++)
+                    {
+                        if (_teamConnectionDict[k] == _connections[i])
+                        {
+                            _teamConnectionDict[k] = default;
+                        }
+                    }
                     _connections[i] = default;
                     break;
+
                 }
             }
         }
@@ -186,6 +196,13 @@ public class ServerBehaviour : MonoBehaviour
     {
         _teamConnectionDict[pTeamId] = pConn;
         Debug.Log("Assigned connection for team " + pTeamId);
+
+        TeamSelectionContainer cont = new TeamSelectionContainer(TeamSelectionContainer.Instruction.RCP);
+        cont.RCPName = "AssignTeamNumber";
+        NetworkPacket packet = new NetworkPacket();
+        packet.Write(cont);
+        packet.WriteInt(pTeamId);
+        ScheduleMessage(packet);
     }
 
     private void OnDestroy()
@@ -224,6 +241,7 @@ public class ServerBehaviour : MonoBehaviour
         bool[] arr = new bool[TEAMS_COUNT];
         for (int i = 0; i < TEAMS_COUNT; i++)
         {
+            print(_teamConnectionDict[i + 1].IsCreated);
             arr[i] = _teamConnectionDict[i + 1] == default;
         }
         return arr;

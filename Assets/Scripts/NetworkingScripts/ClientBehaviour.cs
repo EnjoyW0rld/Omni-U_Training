@@ -23,6 +23,7 @@ public class ClientBehaviour : MonoBehaviour
 
     private List<NetworkPacket> _scheduledPackets;
 
+    private int _teamNubmer;
     private void Awake()
     {
         if (_instance != null && _instance != this)
@@ -38,6 +39,7 @@ public class ClientBehaviour : MonoBehaviour
     {
         _networkDriver = NetworkDriver.Create(new WebSocketNetworkInterface());
         _scheduledPackets = new List<NetworkPacket>();
+        Application.runInBackground = true;
     }
     /// <summary>
     /// Connect to the server passing adress, uses 9001 port by default
@@ -118,5 +120,10 @@ public class ClientBehaviour : MonoBehaviour
                 _connection = default;
             }
         }
+    }
+
+    public void AssignTeam(int pTeamID)
+    {
+        _teamNubmer = pTeamID;
     }
 }

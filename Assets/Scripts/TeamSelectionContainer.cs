@@ -6,6 +6,10 @@ using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.UIElements;
 
+/// <summary>
+/// Class to be used in the process of team selection.
+/// Is being used by both client and server behaviour
+/// </summary>
 public class TeamSelectionContainer : RCPBase, ISerializable
 {
     public bool[] TeamsInUse;
@@ -87,13 +91,10 @@ public class TeamSelectionContainer : RCPBase, ISerializable
         ServerBehaviour.Instance.ScheduleMessage(packet);
     }
     [MyRCP]
-    public void SendTeamNumber(int pTeam)
+    public void AssignTeamNumber(int pTeam)
     {
-
-    }
-    [MyRCP]
-    public void TestCase()
-    {
-        Debug.Log("Called using RCP");
+        ClientBehaviour.Instance.AssignTeam(pTeam);
+        Debug.Log("Team is assigned");
+        SimpleSceneManager.ChangeScene("SampleScene");
     }
 }

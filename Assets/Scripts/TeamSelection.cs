@@ -23,14 +23,8 @@ public class TeamSelection : MonoBehaviour
 
     public void Use(TeamSelectionContainer pContainer)
     {
-        if (ServerBehaviour.IsThisUserServer)
-        {
-            //MasterUse();
-        }
-        else
-        {
-            ClientUse(pContainer);
-        }
+
+        ClientUse(pContainer);
     }
 
     private void ClientUse(TeamSelectionContainer pContainer)
@@ -43,6 +37,10 @@ public class TeamSelection : MonoBehaviour
             _teamButtons[i].SetActive(pContainer.TeamsInUse[i]);
         }
     }
+    /// <summary>
+    /// Send connect to team request to the server specifying desired team number
+    /// </summary>
+    /// <param name="pTeamID"></param>
     public void ConnectToTeam(int pTeamID)
     {
         TeamSelectionContainer cont = new TeamSelectionContainer(TeamSelectionContainer.Instruction.ConnectRequest);
