@@ -24,6 +24,7 @@ public class ClientBehaviour : MonoBehaviour
     private List<NetworkPacket> _scheduledPackets;
 
     private int _teamNubmer;
+    public int TeamNubmer { get { return _teamNubmer; } }
     private void Awake()
     {
         if (_instance != null && _instance != this)
@@ -54,7 +55,7 @@ public class ClientBehaviour : MonoBehaviour
             endpoint.Family = NetworkFamily.Ipv4;
             _connection = _networkDriver.Connect(endpoint);
 
-            
+
         }
     }
     private void OnDestroy()
@@ -74,7 +75,7 @@ public class ClientBehaviour : MonoBehaviour
     }
     public void SchedulePackage(NetworkPacket pPacket)
     {
-            if (!_connection.IsCreated) return;
+        if (!_connection.IsCreated) return;
         print("Package successfully scheduled");
         _scheduledPackets.Add(pPacket);
     }
@@ -99,7 +100,7 @@ public class ClientBehaviour : MonoBehaviour
             {
                 Debug.Log("We are now connected to server!");
                 OnConnected?.Invoke();
-               
+
             }
             else if (cmd == NetworkEvent.Type.Data)
             {

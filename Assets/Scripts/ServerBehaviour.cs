@@ -147,7 +147,7 @@ public class ServerBehaviour : MonoBehaviour
             if (_packetsToSend[i].TeamID != -1) conn = _teamConnectionDict[_packetsToSend[i].TeamID];
             else conn = _packetsToSend[i].Connection;
 
-            _networkDriver.BeginSend(NetworkPipeline.Null, _connections[i], out DataStreamWriter writer);
+            _networkDriver.BeginSend(NetworkPipeline.Null, conn, out DataStreamWriter writer);
             writer.WriteBytes(_packetsToSend[i].Packet.GetBytes());
             _networkDriver.EndSend(writer);
         }
@@ -202,7 +202,7 @@ public class ServerBehaviour : MonoBehaviour
         NetworkPacket packet = new NetworkPacket();
         packet.Write(cont);
         packet.WriteInt(pTeamId);
-        ScheduleMessage(packet);
+        ScheduleMessage(packet,pTeamId);
     }
 
     private void OnDestroy()
@@ -241,7 +241,6 @@ public class ServerBehaviour : MonoBehaviour
         bool[] arr = new bool[TEAMS_COUNT];
         for (int i = 0; i < TEAMS_COUNT; i++)
         {
-            print(_teamConnectionDict[i + 1].IsCreated);
             arr[i] = _teamConnectionDict[i + 1] == default;
         }
         return arr;

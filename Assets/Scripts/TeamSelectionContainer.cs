@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using Unity.Networking.Transport;
 using UnityEditor.Rendering;
+using UnityEditor.UI;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -79,7 +80,9 @@ public class TeamSelectionContainer : RCPBase, ISerializable
         }
         else
         {
-            GameObject.FindObjectOfType<TeamSelection>().Use(this);
+            TeamSelection selection = GameObject.FindObjectOfType<TeamSelection>();
+            if (selection != null)
+                GameObject.FindObjectOfType<TeamSelection>().Use(this);
         }
     }
     private void SendTeamsAvailability()
@@ -95,6 +98,6 @@ public class TeamSelectionContainer : RCPBase, ISerializable
     {
         ClientBehaviour.Instance.AssignTeam(pTeam);
         Debug.Log("Team is assigned");
-        SimpleSceneManager.ChangeScene("SampleScene");
+        SimpleSceneManager.ChangeScene("PlayerScene");
     }
 }

@@ -6,6 +6,7 @@ public class TeamSelection : MonoBehaviour
 {
     private const int TEAMS_COUNT = 3;
     [SerializeField] private GameObject[] _teamButtons;
+    [SerializeField] private string _playerSceneName;
 
     //private bool[] _teamsInUse;
 
