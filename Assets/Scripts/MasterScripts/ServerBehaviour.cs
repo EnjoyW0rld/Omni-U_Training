@@ -202,7 +202,7 @@ public class ServerBehaviour : MonoBehaviour
         NetworkPacket packet = new NetworkPacket();
         packet.Write(cont);
         packet.WriteInt(pTeamId);
-        ScheduleMessage(packet,pTeamId);
+        ScheduleMessage(packet, pTeamId);
     }
 
     private void OnDestroy()
@@ -245,9 +245,31 @@ public class ServerBehaviour : MonoBehaviour
         }
         return arr;
     }
+    public int GetTeamByConnection(NetworkConnection pConn)
+    {
+        if (pConn == default) return -1;
+        foreach (var pair in _teamConnectionDict)
+        {
+            if (pair.Value == pConn) return pair.Key;
+        }
+        return -1;
+    }
+
+    public int GetCurrentConnectionTeam() => GetTeamByConnection(GetCurrentConnection());
     public NetworkConnection GetCurrentConnection()
     {
         return _currentReadConnetion;
+    }
+    
+    public UserData GetCurrentUserData() => GetUserDataByID(GetCurrentConnectionTeam() - 1);
+    /// <summary>
+    /// ID should be your team number "- 1" for this function to work
+    /// </summary>
+    /// <param name="pId"></param>
+    /// <returns></returns>
+    public UserData GetUserDataByID(int pId)
+    {
+        return _userDatas[pId];
     }
 
     private struct ScheduledMessage
