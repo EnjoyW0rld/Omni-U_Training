@@ -29,7 +29,7 @@ public class MasterActions : MonoBehaviour
         if (pObj is EmailingContainer)
         {
             EmailingContainer container = pObj as EmailingContainer;
-            ServerBehaviour.Instance.GetCurrentUserData().AddEmail(container.Email, container.Sender);
+            //ServerBehaviour.Instance.GetCurrentUserData().AddEmail(container.Email, container.Sender);
             // _text[ServerBehaviour.Instance.GetCurrentConnectionTeam() - 1].text = (pObj as EmailingContainer).Email;
             _teamDataHandler[ServerBehaviour.Instance.GetCurrentConnectionTeam() - 1].UpdateText(container.Email,container.Sender);
         }

@@ -7,9 +7,6 @@ using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System;
-using UnityEngine.SocialPlatforms.Impl;
-using UnityEditor;
-using System.Runtime.CompilerServices;
 
 public class ServerBehaviour : MonoBehaviour
 {
@@ -54,7 +51,9 @@ public class ServerBehaviour : MonoBehaviour
     {
         Application.runInBackground = true;
     }
-
+    /// <summary>
+    /// Starts server and automatically changes scene to MasterScreen
+    /// </summary>
     public void StartServer()
     {
         if (_networkDriver.IsCreated)
@@ -230,6 +229,10 @@ public class ServerBehaviour : MonoBehaviour
             }
         }
         return output;
+    }
+    public void AddEmailToTeamArchive(UserData.TextData pTextData, int pTeamID)
+    {
+        _userDatas[pTeamID - 1].AddEmail(pTextData);
     }
 
     // ---------------------

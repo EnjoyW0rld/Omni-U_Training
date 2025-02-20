@@ -4493,6 +4493,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Notification
       objectReference: {fileID: 0}
+    - target: {fileID: 3748590949954214087, guid: dfc394c839f1c5d47bcc1511789a62cb,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7122746938351570467, guid: dfc394c839f1c5d47bcc1511789a62cb,
         type: 3}
       propertyPath: m_Pivot.x

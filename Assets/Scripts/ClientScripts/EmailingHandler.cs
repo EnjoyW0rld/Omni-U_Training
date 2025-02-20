@@ -75,7 +75,9 @@ public class EmailingContainer : RCPBase, ISerializable
         }
         else
         {
-            ReferenceHandler.GetObject<EmailingHandler>(true).Use(this);
+            EmailingHandler handler = ReferenceHandler.GetObject<EmailingHandler>(true);
+            if (handler == null) Debug.LogError("NO EMAILING HANDER");
+            handler.Use(this);
         }
     }
 
