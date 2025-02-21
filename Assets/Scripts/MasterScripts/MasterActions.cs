@@ -6,7 +6,6 @@ using UnityEngine;
 
 public class MasterActions : MonoBehaviour
 {
-    [SerializeField] private TextMeshProUGUI[] _text;
     [SerializeField, Tooltip("Specify team in the correct order")] private TeamDataHandler[] _teamDataHandler;
     public void CallChangeScene()
     {

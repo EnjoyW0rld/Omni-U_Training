@@ -8,6 +8,9 @@ public class EmailingHandler : MonoBehaviour
     [SerializeField] private TMP_InputField _emailText;
     [SerializeField] private TMP_InputField _recipientInput;
     [SerializeField] private GameObject _notification;
+    private PC_UI _pcUi;
+    private PC_UI PC_UI { get { if (_pcUi == null) _pcUi = FindObjectOfType<PC_UI>(); return _pcUi; } }
+
     public void SendWrittenAction()
     {
         EmailingContainer email = new EmailingContainer(EmailingContainer.Instructions.Email);
@@ -23,13 +26,16 @@ public class EmailingHandler : MonoBehaviour
     {
         if (_notification != null) _notification.SetActive(true);
         else Debug.LogAssertion("Notification object is null");
+
+        PC_UI.AddToArchive(new UserData.TextData(pCont));
     }
 }
 public class EmailingContainer : RCPBase, ISerializable
 {
     public enum Instructions { RCP, Email }
-    public string Email;
-    public string Sender;
+    public string Email = "";
+    public string Sender = "";
+    public string Reply = "";
 
     private Instructions _instruction;
     public EmailingContainer(Instructions pInstruction)
@@ -48,6 +54,7 @@ public class EmailingContainer : RCPBase, ISerializable
             case Instructions.Email:
                 Email = pPacket.ReadString();
                 Sender = pPacket.ReadString();
+                Reply = pPacket.ReadString();
                 break;
         }
     }
@@ -63,6 +70,7 @@ public class EmailingContainer : RCPBase, ISerializable
             case Instructions.Email:
                 pPacket.WriteString(Email);
                 pPacket.WriteString(Sender);
+                pPacket.WriteString(Reply);
                 break;
         }
     }

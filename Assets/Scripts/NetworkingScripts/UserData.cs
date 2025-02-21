@@ -21,7 +21,7 @@ public struct UserData
         if (pIndex < 0 || _emails.Count < pIndex)
         {
             Debug.LogAssertion($"Tried to get email with {pIndex} passed as number");
-            return new TextData();
+            return null;
         }
         return _emails[pIndex];
     }
@@ -45,7 +45,7 @@ public struct UserData
     // ------------
     // Data structs
     // ------------
-    public struct TextData
+    public class TextData
     {
         public string Text;
         public string Sender;
@@ -55,6 +55,12 @@ public struct UserData
             Text = pText;
             Sender = pSender;
             Reply = "";
+        }
+        public TextData(EmailingContainer pCont)
+        {
+            Text = pCont.Email;
+            Sender = pCont.Sender;
+            Reply = pCont.Reply;
         }
     }
 }
