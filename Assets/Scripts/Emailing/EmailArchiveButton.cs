@@ -6,18 +6,14 @@ using UnityEngine.UI;
 
 public class EmailArchiveButton : MonoBehaviour
 {
-    //private int _emailID;
-    //private int _teamID;
     [SerializeField] private Button _showEmailButton;
     [SerializeField] private TextMeshProUGUI _archiveTitle;
     private EmailUI _emailUI;
     private UserData.TextData _email;
 
-    public void Initialize(int pEmailID, int pTeamID, EmailUI pEmailUI)
+    public void Initialize(int pEmailID, EmailUI pEmailUI)
     {
         _emailUI = pEmailUI;
-        //_emailID = pEmailID;
-        //_teamID = pTeamID;
         _showEmailButton.onClick.AddListener(CallArchivedEmail);
     }
     public void Initialize(UserData.TextData pEmail, EmailUI pEmailUI)

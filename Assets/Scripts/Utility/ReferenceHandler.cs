@@ -29,6 +29,10 @@ public class ReferenceHandler
         {
             _references[type] = GameObject.FindObjectOfType<T>(pIncludeInactive);
         }
+        if (!_references.ContainsKey(type))
+        {
+            _references.Add(type,GameObject.FindObjectOfType<T>(pIncludeInactive));
+        }
         return (T)_references[type];
     }
 }

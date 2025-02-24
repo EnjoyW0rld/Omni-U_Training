@@ -7,6 +7,7 @@ using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System;
+using System.Linq;
 
 public class ServerBehaviour : MonoBehaviour
 {
@@ -105,6 +106,11 @@ public class ServerBehaviour : MonoBehaviour
     {
         _packetsToSend.Add(new ScheduledMessage(pPacket, pConn));
     }
+    /// <summary>
+    /// If you not specify team to whom you send, it will automatically send it to everyone
+    /// </summary>
+    /// <param name="pPacket"></param>
+    /// <param name="pTeamID"></param>
     public void ScheduleMessage(NetworkPacket pPacket, int pTeamID = -1)
     {
         _packetsToSend.Add(new ScheduledMessage(pPacket, pTeamID));
@@ -230,6 +236,16 @@ public class ServerBehaviour : MonoBehaviour
         }
         return output;
     }
+    public static IPAddress GetDefaultGateway()
+    {
+        var gateway_address = NetworkInterface.GetAllNetworkInterfaces()
+            .Where(e => e.OperationalStatus == OperationalStatus.Up)
+            .SelectMany(e => e.GetIPProperties().GatewayAddresses)
+            .FirstOrDefault();
+        if (gateway_address == null) return null;
+        return gateway_address.Address;
+    }
+
     public void AddEmailToTeamArchive(UserData.TextData pTextData, int pTeamID)
     {
         _userDatas[pTeamID - 1].AddEmail(pTextData);
@@ -263,7 +279,7 @@ public class ServerBehaviour : MonoBehaviour
     {
         return _currentReadConnetion;
     }
-    
+
     public UserData GetCurrentUserData() => GetUserDataByID(GetCurrentConnectionTeam() - 1);
     /// <summary>
     /// ID should be your team number "- 1" for this function to work

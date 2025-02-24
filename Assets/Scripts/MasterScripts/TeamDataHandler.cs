@@ -29,11 +29,6 @@ public class TeamDataHandler : MonoBehaviour
     private UserData.TextData _currentEmailData;
     private Dictionary<UserData.TextData, Button> _instancedButtons = new Dictionary<UserData.TextData, Button>();
 
-    private void Start()
-    {
-        //_instancedButtons = new Dictionary<UserData.TextData, Button>();
-    }
-
     public void DeActivateTeamScreen()
     {
         _teamScreen.SetActive(false);
@@ -48,7 +43,12 @@ public class TeamDataHandler : MonoBehaviour
         _emailPanel.SetActive(true);
         _emailText.text = _currentEmailData.Text;
     }
-    public void UpdateText(string pText, string pSender)
+    /// <summary>
+    /// Create incoming email button and email TextData
+    /// </summary>
+    /// <param name="pText"></param>
+    /// <param name="pSender"></param>
+    public void InitializeIncomingEmail(string pText, string pSender)
     {
         _notifyIcon.SetActive(true);
 
@@ -70,7 +70,7 @@ public class TeamDataHandler : MonoBehaviour
     {
         // Sending reply through the network to the client
         EmailingContainer cont = new EmailingContainer(EmailingContainer.Instructions.Email);
-        cont.Email = _replyInput.text;
+        cont.Email = _currentEmailData.Text;
         cont.Sender = _currentEmailData.Sender;
         cont.Reply = _replyInput.text;
         NetworkPacket packet = new NetworkPacket();
@@ -88,7 +88,6 @@ public class TeamDataHandler : MonoBehaviour
     {
         EmailArchiveButton button = Instantiate(_emailArchiveButton);
         button.transform.SetParent(_archiveButtonsParent);
-        //button.Initialize(ServerBehaviour.Instance.GetUserDataByID(teamId - 1).GetEmailsCount() - 1, teamId, _singleEmailUI);
         button.Initialize(_currentEmailData, _singleEmailUI);
     }
     public static string MakeEmailTitle(UserData.TextData pEmailData)

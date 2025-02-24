@@ -24,5 +24,7 @@ public class PC_UI : MonoBehaviour
         archiveButton.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = TeamDataHandler.MakeEmailTitle(pEmailData);
         archiveButton.Initialize(pEmailData, _emailUI);
         archiveButton.transform.SetParent(_archiveEmailsParent);
+
+        ReferenceHandler.GetObject<NotificationHandler>().CallNotification(NotificationHandler.NotificationType.Email);
     }
 }
