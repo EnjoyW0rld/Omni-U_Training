@@ -4,8 +4,6 @@ using UnityEngine;
 using Unity.Networking.Transport;
 using Unity.Collections;
 using UnityEngine.Events;
-using Unity.VisualScripting;
-using System.ComponentModel;
 
 /// <summary>
 /// Script for client side that holds connection with the host as well as sends/recieves messages
