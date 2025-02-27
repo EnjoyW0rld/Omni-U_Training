@@ -7,9 +7,10 @@ public class EmailingHandler : MonoBehaviour
 {
     [SerializeField] private TMP_InputField _emailText;
     [SerializeField] private TMP_InputField _recipientInput;
+    [SerializeField] private TMP_InputField _TitleInput;
     [SerializeField] private GameObject _notification;
-    private PC_UI _pcUi;
-    private PC_UI PC_UI { get { if (_pcUi == null) _pcUi = FindObjectOfType<PC_UI>(); return _pcUi; } }
+
+    private PC_UI PC_UI { get { return ReferenceHandler.GetObject<PC_UI>(true); } }
 
     public void SendWrittenAction()
     {
@@ -17,6 +18,8 @@ public class EmailingHandler : MonoBehaviour
         NetworkPacket packet = new NetworkPacket();
         email.Email = _emailText.text;
         email.Sender = _recipientInput.text;
+        email.Title = _TitleInput.text;
+
         packet.Write(email);
         ClientBehaviour.Instance.SchedulePackage(packet);
         _emailText.text = "";
@@ -36,6 +39,7 @@ public class EmailingContainer : RCPBase, ISerializable
     public string Email = "";
     public string Sender = "";
     public string Reply = "";
+    public string Title = "";
 
     private Instructions _instruction;
     public EmailingContainer(Instructions pInstruction)
@@ -55,6 +59,7 @@ public class EmailingContainer : RCPBase, ISerializable
                 Email = pPacket.ReadString();
                 Sender = pPacket.ReadString();
                 Reply = pPacket.ReadString();
+                Title = pPacket.ReadString();
                 break;
         }
     }
@@ -71,6 +76,7 @@ public class EmailingContainer : RCPBase, ISerializable
                 pPacket.WriteString(Email);
                 pPacket.WriteString(Sender);
                 pPacket.WriteString(Reply);
+                pPacket.WriteString(Title);
                 break;
         }
     }
@@ -85,6 +91,7 @@ public class EmailingContainer : RCPBase, ISerializable
         {
             EmailingHandler handler = ReferenceHandler.GetObject<EmailingHandler>(true);
             if (handler == null) Debug.LogError("NO EMAILING HANDER");
+            Debug.Log("Recieved " + Reply);
             handler.Use(this);
         }
     }

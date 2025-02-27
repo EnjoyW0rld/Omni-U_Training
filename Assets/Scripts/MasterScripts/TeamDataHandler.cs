@@ -13,10 +13,9 @@ public class TeamDataHandler : MonoBehaviour
     [SerializeField] private int teamId;
     [SerializeField] private GameObject _notifyIcon;
     [SerializeField] private GameObject _teamScreen;
-    //[SerializeField] private TextMeshProUGUI _senderText;
-    //[SerializeField, Tooltip("Button to access sent email")] private GameObject _incomingEmail;
     [Header("Email panel")]
     [SerializeField] private TextMeshProUGUI _emailText;
+    [SerializeField] private TextMeshProUGUI _emailTitle;
     [SerializeField] private GameObject _emailPanel;
     [SerializeField] private TMP_InputField _replyInput;
     [SerializeField] private Transform _incomingEmailsParent;
@@ -42,19 +41,22 @@ public class TeamDataHandler : MonoBehaviour
     {
         _emailPanel.SetActive(true);
         _emailText.text = _currentEmailData.Text;
+        _emailTitle.text = _currentEmailData.Title;
     }
     /// <summary>
     /// Create incoming email button and email TextData
     /// </summary>
     /// <param name="pText"></param>
     /// <param name="pSender"></param>
-    public void InitializeIncomingEmail(string pText, string pSender)
+    public void InitializeIncomingEmail(string pText, string pSender, string pTitle)
     {
+        InitializeIncomingEmail(new UserData.TextData(pText, pSender, pTitle));
+        /*
         _notifyIcon.SetActive(true);
 
         // Creating button to call incoming email screen and adding it to the dictionary to keep track
         // of the instanced buttons and user data they are linked to
-        UserData.TextData recievedData = new UserData.TextData(pText, pSender);
+        UserData.TextData recievedData = new UserData.TextData(pText, pSender, pTitle);
         Button incomingButton = Instantiate(_incomingEmailPrefab);
         incomingButton.transform.SetParent(_incomingEmailsParent);
         incomingButton.GetComponentInChildren<TextMeshProUGUI>().text = MakeEmailTitle(recievedData);
@@ -63,6 +65,23 @@ public class TeamDataHandler : MonoBehaviour
         incomingButton.onClick.AddListener(() =>
         {
             _currentEmailData = recievedData;
+            ShowEmail();
+        });*/
+    }
+    public void InitializeIncomingEmail(UserData.TextData pTextData)
+    {
+        _notifyIcon.SetActive(true);
+
+        // Creating button to call incoming email screen and adding it to the dictionary to keep track
+        // of the instanced buttons and user data they are linked to
+        Button incomingButton = Instantiate(_incomingEmailPrefab);
+        incomingButton.transform.SetParent(_incomingEmailsParent);
+        incomingButton.GetComponentInChildren<TextMeshProUGUI>().text = MakeEmailTitle(pTextData);
+        _instancedButtons.Add(pTextData, incomingButton);
+
+        incomingButton.onClick.AddListener(() =>
+        {
+            _currentEmailData = pTextData;
             ShowEmail();
         });
     }
@@ -92,6 +111,6 @@ public class TeamDataHandler : MonoBehaviour
     }
     public static string MakeEmailTitle(UserData.TextData pEmailData)
     {
-        return $"Email to {pEmailData.Sender}";
+        return $"Email to {pEmailData.Sender} with title {pEmailData.Title}";
     }
 }

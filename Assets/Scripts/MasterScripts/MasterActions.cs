@@ -28,7 +28,7 @@ public class MasterActions : MonoBehaviour
         if (pObj is EmailingContainer)
         {
             EmailingContainer container = pObj as EmailingContainer;
-            _teamDataHandler[ServerBehaviour.Instance.GetCurrentConnectionTeam() - 1].InitializeIncomingEmail(container.Email,container.Sender);
+            _teamDataHandler[ServerBehaviour.Instance.GetCurrentConnectionTeam() - 1].InitializeIncomingEmail(new UserData.TextData(container));
         }
     }
     public void IssueTextPhase(string pPhaseName)

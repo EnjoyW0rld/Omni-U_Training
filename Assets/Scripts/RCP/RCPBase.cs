@@ -37,6 +37,7 @@ public class RCPBase
     public void UseRCP(NetworkPacket pPacket)
     {
         RCPName = pPacket.ReadString();
+        Debug.Log("Executing RCP for " + RCPName);
         MethodInfo method = methods[RCPName];
         ParameterInfo[] parameters = method.GetParameters();
 

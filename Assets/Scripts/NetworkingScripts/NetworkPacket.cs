@@ -45,6 +45,25 @@ public class NetworkPacket
     public void WriteInt(int pInt) => _writer.Write(pInt);
     public void WriteUInt(uint pInt) => _writer.Write(pInt);
     public void WriteBool(bool pBool) => _writer.Write(pBool);
+    public void WriteFloat(float pFloat) => _writer.Write(pFloat);
+    public void WriteVector2(Vector2 pVec2)
+    {
+        WriteFloat(pVec2.x);
+        WriteFloat(pVec2.y);
+    }
+    public void WriteVector3(Vector3 pVec3)
+    {
+        WriteFloat(pVec3.x);
+        WriteFloat(pVec3.y);
+        WriteFloat(pVec3.z);
+    }
+    public void WriteRect(Rect pRect)
+    {
+        WriteFloat(pRect.x);
+        WriteFloat(pRect.y);
+        WriteFloat(pRect.width);
+        WriteFloat(pRect.height);
+    }
     public void WriteUIntArray(uint[] pIntArr)
     {
         if (pIntArr == null || pIntArr.Length == 0)
@@ -85,6 +104,28 @@ public class NetworkPacket
             WriteBool(pBoolArr[i]);
         }
     }
+    public void WriteImage(Sprite pSprite)
+    {
+        byte[] img = pSprite.texture.EncodeToPNG();
+        WriteInt(pSprite.texture.width);
+        WriteInt(pSprite.texture.height);
+        WriteInt(img.Length);
+        _writer.Write(img);
+        WriteRect(pSprite.rect);
+        WriteVector2(pSprite.pivot);
+
+    }
+    public Sprite ReadImage()
+    {
+        Texture2D tex = new Texture2D(ReadInt(), ReadInt());
+        int length = ReadInt();
+
+        byte[] data = new byte[length];
+        _reader.Read(data, 0, length);
+        tex.LoadImage(data);
+
+        return Sprite.Create(tex, ReadRect(), ReadVec2());
+    }
 
     public int[] ReadIntArr()
     {
@@ -118,20 +159,31 @@ public class NetworkPacket
     public uint ReadUInt() => _reader.ReadUInt32();
     public string ReadString() => _reader.ReadString();
     public int ReadInt() => _reader.ReadInt32();
+    public float ReadFloat() => _reader.ReadSingle();
+    public Vector2 ReadVec2() => new Vector2(ReadFloat(), ReadFloat());
+    public Vector3 ReadVec3() => new Vector3(ReadFloat(), ReadFloat(), ReadFloat());
+    public Rect ReadRect() => new Rect(ReadFloat(), ReadFloat(), ReadFloat(), ReadFloat());
     public object ReadByType(Type type)
     {
         object obj = null;
-        switch (Type.GetTypeCode(type))
+        if (type == typeof(Sprite))
         {
-            case TypeCode.Int32:
-                obj = _reader.ReadInt32();
-                break;
-            case TypeCode.Boolean:
-                obj = _reader.ReadBoolean();
-                break;
-            case TypeCode.String:
-                obj = _reader.ReadString();
-                break;
+            obj = ReadImage();
+        }
+        else
+        {
+            switch (Type.GetTypeCode(type))
+            {
+                case TypeCode.Int32:
+                    obj = _reader.ReadInt32();
+                    break;
+                case TypeCode.Boolean:
+                    obj = _reader.ReadBoolean();
+                    break;
+                case TypeCode.String:
+                    obj = _reader.ReadString();
+                    break;
+            }
         }
         Debug.Log("obj is " + obj);
         return obj;

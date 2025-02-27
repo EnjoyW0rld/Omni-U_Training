@@ -50,7 +50,8 @@ public struct UserData
         public string Text;
         public string Sender;
         public string Reply;
-        public TextData(string pText, string pSender)
+        public string Title;
+        public TextData(string pText, string pSender, string Title)
         {
             Text = pText;
             Sender = pSender;
@@ -61,6 +62,7 @@ public struct UserData
             Text = pCont.Email;
             Sender = pCont.Sender;
             Reply = pCont.Reply;
+            Title = pCont.Title;
         }
     }
 }

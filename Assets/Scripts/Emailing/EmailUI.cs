@@ -9,6 +9,7 @@ public class EmailUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _origianalText;
     [SerializeField] private TextMeshProUGUI _sender;
     [SerializeField] private TextMeshProUGUI _reply;
+    [SerializeField] private TextMeshProUGUI _title;
     [SerializeField] private Button _backButton;
 
     public void SetEmailText(UserData.TextData pEmailText)
@@ -16,5 +17,6 @@ public class EmailUI : MonoBehaviour
         _origianalText.text = pEmailText.Text;
         _sender.text = pEmailText.Sender;
         _reply.text = pEmailText.Reply;
+        _title.text = pEmailText.Title;
     }
 }
