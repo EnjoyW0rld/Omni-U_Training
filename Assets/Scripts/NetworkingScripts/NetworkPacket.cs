@@ -104,21 +104,24 @@ public class NetworkPacket
             WriteBool(pBoolArr[i]);
         }
     }
-    public void WriteImage(Sprite pSprite)
+    public void WriteSprite(Sprite pSprite)
     {
         byte[] img = pSprite.texture.EncodeToPNG();
+        Debug.Log($"img is null - {img == null} and its lenght is - {img.Length}");
         WriteInt(pSprite.texture.width);
         WriteInt(pSprite.texture.height);
         WriteInt(img.Length);
         _writer.Write(img);
         WriteRect(pSprite.rect);
         WriteVector2(pSprite.pivot);
-
+        Debug.Log(_writer.BaseStream.Length);
     }
-    public Sprite ReadImage()
+    public Sprite ReadSprite()
     {
         Texture2D tex = new Texture2D(ReadInt(), ReadInt());
         int length = ReadInt();
+        Debug.Log($"Creaing texture with size {tex.width} and {tex.height}");
+        Debug.Log($"array lenght is {length}");
 
         byte[] data = new byte[length];
         _reader.Read(data, 0, length);
@@ -168,7 +171,7 @@ public class NetworkPacket
         object obj = null;
         if (type == typeof(Sprite))
         {
-            obj = ReadImage();
+            obj = ReadSprite();
         }
         else
         {

@@ -18,28 +18,72 @@ public class PhasesHandler : MonoBehaviour
             ReferenceHandler.GetObject<NotificationHandler>().CallNotification();
         }
     }
+    public void AddEmail(UserData.TextData pEmail)
+    {
+        ReferenceHandler.GetObject<PC_UI>(true).AddToArchive(pEmail);
+    }
 }
 public class PhasesContainer : ISerializable
 {
+    public enum Instructions { Browser, Email }
+    public Instructions Instruction;
+
     public string PhaseName;
+    public UserData.TextData Email;
+
     public PhasesContainer() { }
     public PhasesContainer(string pPhaseName)
     {
         PhaseName = pPhaseName;
     }
+    public PhasesContainer(Instructions pInstruction)
+    {
+        Instruction = pInstruction;
+    }
 
     public void DeSerialize(NetworkPacket pPacket)
     {
-        PhaseName = pPacket.ReadString();
+        Instruction = (Instructions)pPacket.ReadInt();
+        switch (Instruction)
+        {
+            case Instructions.Browser:
+                PhaseName = pPacket.ReadString();
+                break;
+            case Instructions.Email:
+                Email = new UserData.TextData(pPacket.ReadString(), pPacket.ReadString(), pPacket.ReadString());
+                break;
+        }
     }
 
     public void Serialize(NetworkPacket pPacket)
     {
-        pPacket.WriteString(PhaseName);
+        pPacket.WriteInt((int)Instruction);
+        switch (Instruction)
+        {
+            case Instructions.Browser:
+                pPacket.WriteString(PhaseName);
+                break;
+            case Instructions.Email:
+                Debug.Log(Email.Text == null);
+                Debug.Log(Email.Recipient == null);
+                Debug.Log(Email.Title == null);
+                pPacket.WriteString(Email.Text);
+                pPacket.WriteString(Email.Recipient);
+                pPacket.WriteString(Email.Title);
+                break;
+        }
     }
 
     public void Use()
     {
-        ReferenceHandler.GetObject<PhasesHandler>().CallPhaseInteraction(PhaseName);
+        switch (Instruction)
+        {
+            case Instructions.Browser:
+                ReferenceHandler.GetObject<PhasesHandler>().CallPhaseInteraction(PhaseName);
+                break;
+            case Instructions.Email:
+                ReferenceHandler.GetObject<PhasesHandler>().AddEmail(Email);
+                break;
+        }
     }
 }

@@ -6,7 +6,6 @@ using UnityEngine;
 
 public struct UserData
 {
-    //private NetworkConnection _connection;
     private uint _teamNum;
     private List<TextData> _emails;
 
@@ -33,10 +32,6 @@ public struct UserData
         _teamNum = pTeamNum;
         _emails = new List<TextData>();
     }
-    /*public void AddEmail(string pText, string pSender)
-    {
-        _emails.Add(new TextData(pText, pSender));
-    }*/
     public void AddEmail(TextData pTextData)
     {
         _emails.Add(pTextData);
@@ -48,21 +43,33 @@ public struct UserData
     public class TextData
     {
         public string Text;
+        public string Recipient;
         public string Sender;
         public string Reply;
         public string Title;
-        public TextData(string pText, string pSender, string Title)
+        public TextData()
+        {
+            Text = "";
+            Recipient = "";
+            Reply = "";
+            Title = "";
+            Sender = "";
+        }
+        public TextData(string pText, string pRecipient, string pTitle)
         {
             Text = pText;
-            Sender = pSender;
+            Recipient = pRecipient;
+            Title = pTitle;
             Reply = "";
+            Sender = "";
         }
         public TextData(EmailingContainer pCont)
         {
             Text = pCont.Email;
-            Sender = pCont.Sender;
+            Recipient = pCont.Recipient;
             Reply = pCont.Reply;
             Title = pCont.Title;
+            Sender = pCont.Sender;
         }
     }
 }

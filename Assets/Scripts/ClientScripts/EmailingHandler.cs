@@ -17,7 +17,7 @@ public class EmailingHandler : MonoBehaviour
         EmailingContainer email = new EmailingContainer(EmailingContainer.Instructions.Email);
         NetworkPacket packet = new NetworkPacket();
         email.Email = _emailText.text;
-        email.Sender = _recipientInput.text;
+        email.Recipient = _recipientInput.text;
         email.Title = _TitleInput.text;
 
         packet.Write(email);
@@ -37,6 +37,7 @@ public class EmailingContainer : RCPBase, ISerializable
 {
     public enum Instructions { RCP, Email }
     public string Email = "";
+    public string Recipient = "";
     public string Sender = "";
     public string Reply = "";
     public string Title = "";
@@ -57,9 +58,10 @@ public class EmailingContainer : RCPBase, ISerializable
                 break;
             case Instructions.Email:
                 Email = pPacket.ReadString();
-                Sender = pPacket.ReadString();
+                Recipient = pPacket.ReadString();
                 Reply = pPacket.ReadString();
                 Title = pPacket.ReadString();
+                Sender = pPacket.ReadString();
                 break;
         }
     }
@@ -74,9 +76,10 @@ public class EmailingContainer : RCPBase, ISerializable
                 break;
             case Instructions.Email:
                 pPacket.WriteString(Email);
-                pPacket.WriteString(Sender);
+                pPacket.WriteString(Recipient);
                 pPacket.WriteString(Reply);
                 pPacket.WriteString(Title);
+                pPacket.WriteString(Sender);
                 break;
         }
     }

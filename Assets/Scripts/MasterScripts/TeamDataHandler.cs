@@ -90,8 +90,10 @@ public class TeamDataHandler : MonoBehaviour
         // Sending reply through the network to the client
         EmailingContainer cont = new EmailingContainer(EmailingContainer.Instructions.Email);
         cont.Email = _currentEmailData.Text;
-        cont.Sender = _currentEmailData.Sender;
+        cont.Recipient = _currentEmailData.Recipient;
         cont.Reply = _replyInput.text;
+        cont.Sender = _currentEmailData.Sender;
+        cont.Title = _currentEmailData.Title;
         NetworkPacket packet = new NetworkPacket();
         packet.Write(cont);
 
@@ -111,6 +113,6 @@ public class TeamDataHandler : MonoBehaviour
     }
     public static string MakeEmailTitle(UserData.TextData pEmailData)
     {
-        return $"Email to {pEmailData.Sender} with title {pEmailData.Title}";
+        return $"Email to {pEmailData.Recipient} with title {pEmailData.Title}";
     }
 }
