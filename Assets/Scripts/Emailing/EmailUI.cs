@@ -16,9 +16,8 @@ public class EmailUI : MonoBehaviour
     public void SetEmailText(UserData.TextData pEmailText)
     {
         _origianalText.text = pEmailText.Text;
-        _sender.text = pEmailText.Recipient;
+        _sender.text = pEmailText.Sender;
         _reply.text = pEmailText.Reply;
-        Debug.Log("Title is " + pEmailText.Title);
         _title.text = pEmailText.Title;
         _recipient.text = pEmailText.Recipient;
     }

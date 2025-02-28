@@ -14,6 +14,7 @@ public class EmailingHandler : MonoBehaviour
 
     public void SendWrittenAction()
     {
+        if (!ReferenceHandler.GetObject<ActionsHandler>(true).PerformAction()) return;
         EmailingContainer email = new EmailingContainer(EmailingContainer.Instructions.Email);
         NetworkPacket packet = new NetworkPacket();
         email.Email = _emailText.text;
@@ -94,7 +95,6 @@ public class EmailingContainer : RCPBase, ISerializable
         {
             EmailingHandler handler = ReferenceHandler.GetObject<EmailingHandler>(true);
             if (handler == null) Debug.LogError("NO EMAILING HANDER");
-            Debug.Log("Recieved " + Reply);
             handler.Use(this);
         }
     }

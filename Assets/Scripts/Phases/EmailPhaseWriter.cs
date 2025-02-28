@@ -16,6 +16,7 @@ public class EmailPhaseWriter : MonoBehaviour
         phasesContainer.Email = new UserData.TextData();
         phasesContainer.Email.Text = _mailText.text;
         phasesContainer.Email.Sender = _sender.text;
+        Debug.Log("Sender is " + phasesContainer.Email.Sender);
         phasesContainer.Email.Title = _title.text;
         NetworkPacket packet = new NetworkPacket();
         packet.Write(phasesContainer);

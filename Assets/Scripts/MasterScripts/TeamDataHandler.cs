@@ -51,22 +51,6 @@ public class TeamDataHandler : MonoBehaviour
     public void InitializeIncomingEmail(string pText, string pSender, string pTitle)
     {
         InitializeIncomingEmail(new UserData.TextData(pText, pSender, pTitle));
-        /*
-        _notifyIcon.SetActive(true);
-
-        // Creating button to call incoming email screen and adding it to the dictionary to keep track
-        // of the instanced buttons and user data they are linked to
-        UserData.TextData recievedData = new UserData.TextData(pText, pSender, pTitle);
-        Button incomingButton = Instantiate(_incomingEmailPrefab);
-        incomingButton.transform.SetParent(_incomingEmailsParent);
-        incomingButton.GetComponentInChildren<TextMeshProUGUI>().text = MakeEmailTitle(recievedData);
-
-        _instancedButtons.Add(recievedData, incomingButton);
-        incomingButton.onClick.AddListener(() =>
-        {
-            _currentEmailData = recievedData;
-            ShowEmail();
-        });*/
     }
     public void InitializeIncomingEmail(UserData.TextData pTextData)
     {

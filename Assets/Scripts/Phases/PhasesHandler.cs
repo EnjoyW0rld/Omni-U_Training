@@ -51,6 +51,8 @@ public class PhasesContainer : ISerializable
                 break;
             case Instructions.Email:
                 Email = new UserData.TextData(pPacket.ReadString(), pPacket.ReadString(), pPacket.ReadString());
+                Email.Sender = pPacket.ReadString();
+                Debug.Log(Email.Sender + " is email sender");
                 break;
         }
     }
@@ -64,12 +66,10 @@ public class PhasesContainer : ISerializable
                 pPacket.WriteString(PhaseName);
                 break;
             case Instructions.Email:
-                Debug.Log(Email.Text == null);
-                Debug.Log(Email.Recipient == null);
-                Debug.Log(Email.Title == null);
                 pPacket.WriteString(Email.Text);
                 pPacket.WriteString(Email.Recipient);
                 pPacket.WriteString(Email.Title);
+                pPacket.WriteString(Email.Sender);
                 break;
         }
     }
