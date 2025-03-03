@@ -1757,6 +1757,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7093819269449808030, guid: 2ad03fd10ec71ee458adc41427be2886,
         type: 3}
+      propertyPath: _teamId
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7093819269449808030, guid: 2ad03fd10ec71ee458adc41427be2886,
+        type: 3}
       propertyPath: _notifyIcon
       value: 
       objectReference: {fileID: 1245641667}
@@ -2157,6 +2162,11 @@ PrefabInstance:
     - target: {fileID: 7093819269449808030, guid: 2ad03fd10ec71ee458adc41427be2886,
         type: 3}
       propertyPath: teamId
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7093819269449808030, guid: 2ad03fd10ec71ee458adc41427be2886,
+        type: 3}
+      propertyPath: _teamId
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7093819269449808030, guid: 2ad03fd10ec71ee458adc41427be2886,
@@ -4708,6 +4718,11 @@ PrefabInstance:
     - target: {fileID: 7093819269449808030, guid: 2ad03fd10ec71ee458adc41427be2886,
         type: 3}
       propertyPath: teamId
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7093819269449808030, guid: 2ad03fd10ec71ee458adc41427be2886,
+        type: 3}
+      propertyPath: _teamId
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7093819269449808030, guid: 2ad03fd10ec71ee458adc41427be2886,

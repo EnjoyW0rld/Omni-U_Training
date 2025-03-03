@@ -7,10 +7,11 @@ using UnityEngine.UI;
 /// <summary>
 /// Holds current data for UI writing per team
 /// Used for master scene
+/// Sends email replies to the users
 /// </summary>
 public class TeamDataHandler : MonoBehaviour
 {
-    [SerializeField] private int teamId;
+    [SerializeField] private int _teamId;
     [SerializeField] private GameObject _notifyIcon;
     [SerializeField] private GameObject _teamScreen;
     [Header("Email panel")]
@@ -72,28 +73,41 @@ public class TeamDataHandler : MonoBehaviour
     public void SendReply()
     {
         // Sending reply through the network to the client
-        EmailingContainer cont = new EmailingContainer(EmailingContainer.Instructions.Email);
-        cont.Email = _currentEmailData.Text;
-        cont.Recipient = _currentEmailData.Recipient;
-        cont.Reply = _replyInput.text;
-        cont.Sender = _currentEmailData.Sender;
-        cont.Title = _currentEmailData.Title;
-        NetworkPacket packet = new NetworkPacket();
-        packet.Write(cont);
+        EmailingContainer cont = GetReplyMailContainer();
 
         _currentEmailData.Reply = _replyInput.text;
-        ServerBehaviour.Instance.AddEmailToTeamArchive(_currentEmailData, teamId);
-        ServerBehaviour.Instance.ScheduleMessage(packet, teamId);
+        ServerBehaviour.Instance.AddEmailToTeamArchive(_currentEmailData, _teamId);
+        ServerBehaviour.Instance.ScheduleMessage(cont.PackObject(), _teamId);
         AddToArchive();
         // Destroying and removing button from the instanced dictionary
         Destroy(_instancedButtons[_currentEmailData].gameObject);
         _instancedButtons.Remove(_currentEmailData);
+
+        AddPointsToTeam(10);
     }
     private void AddToArchive()
     {
         EmailArchiveButton button = Instantiate(_emailArchiveButton);
         button.transform.SetParent(_archiveButtonsParent);
         button.Initialize(_currentEmailData, _singleEmailUI);
+    }
+    private void AddPointsToTeam(int pScore)
+    {
+        ScoreContainer scoreContainer = new ScoreContainer(ScoreContainer.Instructions.AssignScore);
+        scoreContainer.TargetTeam = _teamId;
+        scoreContainer.ScoreToAdd = pScore;
+        ServerBehaviour.Instance.ScheduleMessage(scoreContainer.PackObject());
+    }
+
+    private EmailingContainer GetReplyMailContainer()
+    {
+        EmailingContainer emailContainer = new EmailingContainer(EmailingContainer.Instructions.Email);
+        emailContainer.Email = _currentEmailData.Text;
+        emailContainer.Recipient = _currentEmailData.Recipient;
+        emailContainer.Reply = _replyInput.text;
+        emailContainer.Sender = _currentEmailData.Sender;
+        emailContainer.Title = _currentEmailData.Title;
+        return emailContainer;
     }
     public static string MakeEmailTitle(UserData.TextData pEmailData)
     {

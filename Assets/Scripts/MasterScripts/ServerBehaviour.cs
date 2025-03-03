@@ -248,6 +248,7 @@ public class ServerBehaviour : MonoBehaviour
 
     public void AddEmailToTeamArchive(UserData.TextData pTextData, int pTeamID)
     {
+        print(pTeamID + " team id");
         _userDatas[pTeamID - 1].AddEmail(pTextData);
     }
 

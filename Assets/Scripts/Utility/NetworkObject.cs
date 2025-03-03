@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,8 +6,6 @@ using UnityEngine;
 public abstract class NetworkObject : ISerializable
 {
     public abstract void DeSerialize(NetworkPacket pPacket);
-
-
     public NetworkPacket PackObject()
     {
         NetworkPacket pPacket = new NetworkPacket();
