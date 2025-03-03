@@ -23,7 +23,7 @@ public class PhasesHandler : MonoBehaviour
         ReferenceHandler.GetObject<PC_UI>(true).AddToArchive(pEmail);
     }
 }
-public class PhasesContainer : ISerializable
+public class PhasesContainer : NetworkObject
 {
     public enum Instructions { Browser, Email }
     public Instructions Instruction;
@@ -41,7 +41,7 @@ public class PhasesContainer : ISerializable
         Instruction = pInstruction;
     }
 
-    public void DeSerialize(NetworkPacket pPacket)
+    public override void DeSerialize(NetworkPacket pPacket)
     {
         Instruction = (Instructions)pPacket.ReadInt();
         switch (Instruction)
@@ -57,7 +57,7 @@ public class PhasesContainer : ISerializable
         }
     }
 
-    public void Serialize(NetworkPacket pPacket)
+    public override void Serialize(NetworkPacket pPacket)
     {
         pPacket.WriteInt((int)Instruction);
         switch (Instruction)
@@ -74,7 +74,7 @@ public class PhasesContainer : ISerializable
         }
     }
 
-    public void Use()
+    public override void Use()
     {
         switch (Instruction)
         {

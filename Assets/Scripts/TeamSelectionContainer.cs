@@ -92,6 +92,14 @@ public class TeamSelectionContainer : RCPBase, ISerializable
         packet.Write(cont);
         ServerBehaviour.Instance.ScheduleMessage(packet);
     }
+
+    public NetworkPacket PackObject()
+    {
+        NetworkPacket packet = new NetworkPacket();
+        packet.Write(this);
+        return packet;
+    }
+
     [MyRCP]
     public void AssignTeamNumber(int pTeam)
     {
@@ -99,4 +107,5 @@ public class TeamSelectionContainer : RCPBase, ISerializable
         Debug.Log("Team is assigned");
         SimpleSceneManager.ChangeScene("PlayerScene");
     }
+
 }

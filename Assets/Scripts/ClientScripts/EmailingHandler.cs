@@ -16,13 +16,11 @@ public class EmailingHandler : MonoBehaviour
     {
         if (!ReferenceHandler.GetObject<ActionsHandler>(true).PerformAction()) return;
         EmailingContainer email = new EmailingContainer(EmailingContainer.Instructions.Email);
-        NetworkPacket packet = new NetworkPacket();
         email.Email = _emailText.text;
         email.Recipient = _recipientInput.text;
         email.Title = _TitleInput.text;
 
-        packet.Write(email);
-        ClientBehaviour.Instance.SchedulePackage(packet);
+        ClientBehaviour.Instance.SchedulePackage(email.PackObject());
         _emailText.text = "";
         _recipientInput.text = "";
     }
@@ -34,7 +32,7 @@ public class EmailingHandler : MonoBehaviour
         PC_UI.AddToArchive(new UserData.TextData(pCont));
     }
 }
-public class EmailingContainer : RCPBase, ISerializable
+public class EmailingContainer : RCPNetworkObject
 {
     public enum Instructions { RCP, Email }
     public string Email = "";
@@ -49,7 +47,7 @@ public class EmailingContainer : RCPBase, ISerializable
         _instruction = pInstruction;
     }
     public EmailingContainer() { }
-    public void DeSerialize(NetworkPacket pPacket)
+    public override void DeSerialize(NetworkPacket pPacket)
     {
         _instruction = (Instructions)pPacket.ReadInt();
         switch (_instruction)
@@ -67,7 +65,7 @@ public class EmailingContainer : RCPBase, ISerializable
         }
     }
 
-    public void Serialize(NetworkPacket pPacket)
+    public override void Serialize(NetworkPacket pPacket)
     {
         pPacket.WriteInt((int)_instruction);
         switch (_instruction)
@@ -85,7 +83,7 @@ public class EmailingContainer : RCPBase, ISerializable
         }
     }
 
-    public void Use()
+    public override void Use()
     {
         if (ServerBehaviour.IsThisUserServer)
         {

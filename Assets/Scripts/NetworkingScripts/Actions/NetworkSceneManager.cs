@@ -2,19 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NetworkSceneManager :  ISerializable
+public class NetworkSceneManager : NetworkObject
 {
     public string _sceneName;
-    public void DeSerialize(NetworkPacket pPacket)
+    public override void DeSerialize(NetworkPacket pPacket)
     {
         _sceneName = pPacket.ReadString();
     }
 
-    public void Serialize(NetworkPacket pPacket)
+    public override void Serialize(NetworkPacket pPacket)
     {
-       pPacket.WriteString(_sceneName);
+        pPacket.WriteString(_sceneName);
     }
-    public void Use()
+    public override void Use()
     {
         SimpleSceneManager.ChangeScene(_sceneName);
     }

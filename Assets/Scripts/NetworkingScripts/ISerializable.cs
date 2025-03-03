@@ -6,5 +6,7 @@ public interface ISerializable
 {
     public void Serialize(NetworkPacket pPacket);
     public void DeSerialize(NetworkPacket pPacket);
+    public NetworkPacket PackObject();
+    
     public void Use();
 }
