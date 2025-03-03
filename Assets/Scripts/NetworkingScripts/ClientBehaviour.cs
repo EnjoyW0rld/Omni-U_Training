@@ -4,6 +4,7 @@ using UnityEngine;
 using Unity.Networking.Transport;
 using Unity.Collections;
 using UnityEngine.Events;
+using static Unity.Burst.Intrinsics.X86.Avx;
 
 /// <summary>
 /// Script for client side that holds connection with the host as well as sends/recieves messages
@@ -21,8 +22,10 @@ public class ClientBehaviour : MonoBehaviour
 
     private List<NetworkPacket> _scheduledPackets;
 
+    public bool IsConnected { get; private set; }
     private int _teamNubmer;
     public int TeamNubmer { get { return _teamNubmer; } }
+
     private void Awake()
     {
         if (_instance != null && _instance != this)
@@ -47,14 +50,18 @@ public class ClientBehaviour : MonoBehaviour
     public void MakeConnection(string adress)
     {
         print("Make connection called");
-        if (!_connection.IsCreated)
+        if (!IsConnected)
         {
             NetworkEndpoint endpoint = NetworkEndpoint.Parse(adress, (ushort)9001);
             endpoint.Family = NetworkFamily.Ipv4;
             _connection = _networkDriver.Connect(endpoint);
-
-
         }
+    }
+    public void TryMakeConnection(string adress)
+    {
+        NetworkEndpoint endpoint = NetworkEndpoint.Parse(adress, (ushort)9001);
+        endpoint.Family = NetworkFamily.Ipv4;
+        _networkDriver.Connect(endpoint);
     }
     private void OnDestroy()
     {
@@ -64,7 +71,8 @@ public class ClientBehaviour : MonoBehaviour
     void Update()
     {
         _networkDriver.ScheduleUpdate().Complete();
-        if (!_connection.IsCreated)
+        ReadConnectRequests();
+        if (!IsConnected)
         {
             return;
         }
@@ -88,6 +96,23 @@ public class ClientBehaviour : MonoBehaviour
         }
         _scheduledPackets.Clear();
     }
+    private void ReadConnectRequests()
+    {
+        if (!IsConnected)
+        {
+            NetworkEvent.Type cmd;
+            while ((cmd = _networkDriver.PopEvent(out NetworkConnection connection, out DataStreamReader dataReader)) != NetworkEvent.Type.Empty)
+            {
+                if (cmd == NetworkEvent.Type.Connect)
+                {
+                    _connection = connection;
+                    IsConnected = true;
+                    OnConnected?.Invoke();
+                }
+            }
+            return;
+        }
+    }
     private void ReadData()
     {
         DataStreamReader streamReader;
@@ -98,7 +123,6 @@ public class ClientBehaviour : MonoBehaviour
             {
                 Debug.Log("We are now connected to server!");
                 OnConnected?.Invoke();
-
             }
             else if (cmd == NetworkEvent.Type.Data)
             {
@@ -106,12 +130,6 @@ public class ClientBehaviour : MonoBehaviour
                 NetworkPacket pPacket = new NetworkPacket(streamReader);
                 ISerializable data = pPacket.Read();
                 data.Use();
-
-                //NativeArray<byte> data = new NativeArray<byte>(streamReader.Length, Allocator.Temp);
-                /*streamReader.ReadBytes(data);
-                NetworkPacket packet = new NetworkPacket(data);
-                ISerializable obj = packet.Read();
-                ((NetworkSceneManager)obj).Use();*/
             }
             else if (cmd == NetworkEvent.Type.Disconnect)
             {

@@ -1,8 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net.NetworkInformation;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class MenuHandler : MonoBehaviour
 {
@@ -32,6 +34,31 @@ public class MenuHandler : MonoBehaviour
     {
         if (ServerBehaviour.Instance == null) _createdServerPrefab = Instantiate(_serverPrefab);
         ServerBehaviour.Instance.StartServer();
+    }
+
+    public void DoLuckyConnect()
+    {
+
+        if (ClientBehaviour.Instance == null)
+        {
+            Instantiate(_clientPrefab);
+            StartCoroutine(DoNextTick(() => DoLuckyConnect()));
+            return;
+        }
+
+        string ip = ServerBehaviour.GetLocalIPv4(NetworkInterfaceType.Wireless80211);
+        ip = ip.Substring(0, ip.LastIndexOf(".") + 1);
+        ClientBehaviour.Instance.OnConnected.AddListener(ChangeToTeamScreen);
+        StartCoroutine(TryDoConnection(ip));
+    }
+    private IEnumerator TryDoConnection(string pOrigIp)
+    {
+        for (int i = 0; i < 1000; i++)
+        {
+            yield return new WaitForEndOfFrame();
+            if (ClientBehaviour.Instance.IsConnected) break;
+            ClientBehaviour.Instance.TryMakeConnection(pOrigIp + i);
+        }
     }
     public static IEnumerator DoNextTick(Action action)
     {
