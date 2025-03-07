@@ -22,6 +22,8 @@ public class ClientBehaviour : MonoBehaviour
 
     private List<NetworkPacket> _scheduledPackets;
 
+    private Fragmentation _fragmenter;
+
     public bool IsConnected { get; private set; }
     private int _teamNubmer;
     public int TeamNubmer { get { return _teamNubmer; } }
@@ -91,7 +93,7 @@ public class ClientBehaviour : MonoBehaviour
         for (int i = 0; i < _scheduledPackets.Count; i++)
         {
             _networkDriver.BeginSend(NetworkPipeline.Null, _connection, out DataStreamWriter writer);
-            writer.WriteBytes(_scheduledPackets[i].GetBytes());
+            writer.WriteBytes(_scheduledPackets[i].GetNativeArrayBytes());
             _networkDriver.EndSend(writer);
         }
         _scheduledPackets.Clear();
@@ -113,10 +115,12 @@ public class ClientBehaviour : MonoBehaviour
             return;
         }
     }
+    int fragBytesRecieved = 0;
     private void ReadData()
     {
         DataStreamReader streamReader;
         NetworkEvent.Type cmd;
+
         while ((cmd = _connection.PopEvent(_networkDriver, out streamReader)) != NetworkEvent.Type.Empty)
         {
             if (cmd == NetworkEvent.Type.Connect)
@@ -129,7 +133,28 @@ public class ClientBehaviour : MonoBehaviour
                 print("recieved !");
                 NetworkPacket pPacket = new NetworkPacket(streamReader);
                 ISerializable data = pPacket.Read();
-                data.Use();
+                //Debug.Log($"Managed to read package {data.GetType().FullName} and we red {fragBytesRecieved}");
+                if (data is FragSetting)
+                {
+                    DebugTextWriter.WriteOnScreen($"Recieved fragSettings");
+                    _fragmenter = new Fragmentation();
+                    _fragmenter.Initialize(data as FragSetting);
+                    Debug.Log($"Initialized fragmenter");
+                }
+                else if (data is FragBytes)
+                {
+                    fragBytesRecieved++;
+                    DebugTextWriter.WriteOnScreen($"Recieved frag bytes");
+                    if (_fragmenter.TryDefragment(data as FragBytes))
+                    {
+                        _fragmenter = null;
+                    }
+
+                }
+                else
+                {
+                    data.Use();
+                }
             }
             else if (cmd == NetworkEvent.Type.Disconnect)
             {

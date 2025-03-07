@@ -8,6 +8,7 @@ using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System;
 using System.Linq;
+using Unity.Mathematics;
 
 public class ServerBehaviour : MonoBehaviour
 {
@@ -131,6 +132,7 @@ public class ServerBehaviour : MonoBehaviour
     {
         if (_packetsToSend.Count == 0) return;
 
+        int packetsSent = 0;
         //Sends data to every connection
         for (int i = 0; i < _packetsToSend.Count; i++)
         {
@@ -138,12 +140,16 @@ public class ServerBehaviour : MonoBehaviour
             {
                 for (int t = 0; t < _connections.Length; t++)
                 {
+                    
+                    Debug.Log($"{_networkDriver.GetEventQueueSizeForConnection(_connections[t])} - Queeu for connection");
                     if (!_connections[t].IsCreated || _connections[t] == default) continue;
                     _networkDriver.BeginSend(NetworkPipeline.Null, _connections[t], out DataStreamWriter dataWriter);
-                    dataWriter.WriteBytes(_packetsToSend[i].Packet.GetBytes());
+                    dataWriter.WriteBytes(_packetsToSend[i].Packet.GetNativeArrayBytes());
                     _networkDriver.EndSend(dataWriter);
 
                 }
+                packetsSent++;
+                if (packetsSent > 20) break;
                 continue;
             }
 
@@ -153,10 +159,21 @@ public class ServerBehaviour : MonoBehaviour
             else conn = _packetsToSend[i].Connection;
 
             _networkDriver.BeginSend(NetworkPipeline.Null, conn, out DataStreamWriter writer);
-            writer.WriteBytes(_packetsToSend[i].Packet.GetBytes());
+            writer.WriteBytes(_packetsToSend[i].Packet.GetNativeArrayBytes());
             _networkDriver.EndSend(writer);
         }
-        _packetsToSend.Clear();
+        if (packetsSent != 0)
+        {
+            _packetsToSend.RemoveRange(0, packetsSent);
+            Debug.Log($"Sent {packetsSent} packets, cleaning part of it");
+        }
+        else
+        {
+            _packetsToSend.Clear();
+        }
+
+
+
 
     }
     /// <summary>
@@ -251,6 +268,23 @@ public class ServerBehaviour : MonoBehaviour
         print(pTeamID + " team id");
         _userDatas[pTeamID - 1].AddEmail(pTextData);
     }
+    public void SendFragmentedData(ISerializable pObj)
+    {
+        //DebugTextWriter.WriteOnScreen($"ref object exists - {pObj.PackObject() != null}");
+        NetworkPacket[] array;
+        byte[] bytes = pObj.PackObject().GetBytes();
+        //DebugTextWriter.WriteOnScreen($"{bytes.Length} - is bytes we plan to write");
+        array = Fragmentation.DoFragmentation(bytes, out FragSetting fragSettings);
+        ScheduleMessage(fragSettings.PackObject());
+
+        for (int i = 0; i < array.Length; i++)
+        {
+            ScheduleMessage(array[i]);
+        }
+    }
+
+
+
 
     // ---------------------
     // GET FUNCTIONS

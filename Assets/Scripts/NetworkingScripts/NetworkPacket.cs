@@ -41,6 +41,7 @@ public class NetworkPacket
         _reader.Dispose();
     }
 
+    public void WriteBytes(byte[] data) => _writer.Write(data);
     public void WriteString(string pString) => _writer.Write(pString);
     public void WriteInt(int pInt) => _writer.Write(pInt);
     public void WriteUInt(uint pInt) => _writer.Write(pInt);
@@ -106,28 +107,42 @@ public class NetworkPacket
     }
     public void WriteSprite(Sprite pSprite)
     {
-        byte[] img = pSprite.texture.EncodeToPNG();
-        Debug.Log($"img is null - {img == null} and its lenght is - {img.Length}");
+        //var img = pSprite.texture.GetRawTextureData<byte>();
+        var img = Fragmentation.GetBytesFromTexture(pSprite);
+        Debug.Log($"Raw texture data we write is {img.Length}");
+        Debug.Log($"First couple bytes of data is {img[0]} {img[1]} {img[3]}");
+
         WriteInt(pSprite.texture.width);
         WriteInt(pSprite.texture.height);
+        WriteInt((int)pSprite.texture.format);
         WriteInt(img.Length);
-        _writer.Write(img);
+        WriteBytes(img);
+        //WriteBytes(img.ToArray());
         WriteRect(pSprite.rect);
         WriteVector2(pSprite.pivot);
-        Debug.Log(_writer.BaseStream.Length);
+        DebugTextWriter.WriteOnScreen($"First couple bytes of data is {img[0]} {img[1]} {img[3]}");
     }
+
     public Sprite ReadSprite()
     {
-        Texture2D tex = new Texture2D(ReadInt(), ReadInt());
+        //Debug.Log($"Reader length before couple ints red is {_reader.BaseStream.Length} and position - {_reader.BaseStream.Position}");
+        Texture2D tex = new Texture2D(ReadInt(), ReadInt(), (TextureFormat)ReadInt(), false);
         int length = ReadInt();
-        Debug.Log($"Creaing texture with size {tex.width} and {tex.height}");
-        Debug.Log($"array lenght is {length}");
 
         byte[] data = new byte[length];
+        //Debug.Log($"Reader length after couple ints red is {_reader.BaseStream.Length} and position - {_reader.BaseStream.Position}");
         _reader.Read(data, 0, length);
-        tex.LoadImage(data);
+        Debug.Log($"First couple bytes of RED data is {data[0]} {data[1]} {data[3]}");
 
-        return Sprite.Create(tex, ReadRect(), ReadVec2());
+
+        //tex.LoadImage(data);
+        tex.LoadRawTextureData(data);
+        tex.Apply(true);
+        Rect rect = ReadRect();
+        Vector2 pivot = ReadVec2();
+        Sprite spr = Sprite.Create(tex, rect, pivot);
+        Debug.Log($"New sprite is null? - {spr == null}");
+        return spr;
     }
 
     public int[] ReadIntArr()
@@ -158,6 +173,10 @@ public class NetworkPacket
         return arr;
     }
 
+    public byte[] ReadRemainingBytes()
+    {
+        return _reader.ReadBytes((int)_reader.BaseStream.Length);
+    }
     public bool ReadBool() => _reader.ReadBoolean();
     public uint ReadUInt() => _reader.ReadUInt32();
     public string ReadString() => _reader.ReadString();
@@ -203,17 +222,23 @@ public class NetworkPacket
     }
     public ISerializable Read()
     {
+        //Debug.Log(_reader.BaseStream.Length + " is stream we try to read");
         Type type = Type.GetType(ReadString());
         ISerializable obj = (ISerializable)Activator.CreateInstance(type);
         obj.DeSerialize(this);
         return obj;
     }
+    public byte[] GetBytes()
+    {
+        return ((MemoryStream)_writer.BaseStream).ToArray();
+    }
     /// <summary>
     /// Returns NativeArray of all the written data for this package
     /// </summary>
     /// <returns></returns>
-    public NativeArray<byte> GetBytes()
+    public NativeArray<byte> GetNativeArrayBytes()
     {
+        Debug.Log($"Is writer existent {_writer != null}");
         NativeArray<byte> arr = new NativeArray<byte>(((MemoryStream)_writer.BaseStream).ToArray(), Allocator.Temp);
         return arr;
     }
