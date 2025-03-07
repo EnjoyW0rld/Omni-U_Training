@@ -45,8 +45,12 @@ public class MenuHandler : MonoBehaviour
             StartCoroutine(DoNextTick(() => DoLuckyConnect()));
             return;
         }
-
-        string ip = ServerBehaviour.GetLocalIPv4(NetworkInterfaceType.Wireless80211);
+#if UNITY_STANDALONE_OSX
+        NetworkInterfaceType interfaceType = NetworkInterfaceType.Ethernet;
+#elif UNITY_STANDALONE_WIN
+        NetworkInterfaceType interfaceType = NetworkInterfaceType.Wireless80211;
+#endif
+        string ip = ServerBehaviour.GetLocalIPv4(interfaceType);
         ip = ip.Substring(0, ip.LastIndexOf(".") + 1);
         ClientBehaviour.Instance.OnConnected.AddListener(ChangeToTeamScreen);
         StartCoroutine(TryDoConnection(ip));
