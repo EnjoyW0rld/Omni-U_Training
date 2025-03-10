@@ -17,6 +17,9 @@ public class TeamDataHandler : MonoBehaviour
     [Header("Email panel")]
     [SerializeField] private TextMeshProUGUI _emailText;
     [SerializeField] private TextMeshProUGUI _emailTitle;
+    [SerializeField] private TextMeshProUGUI _emailRecipient;
+    [SerializeField] private TextMeshProUGUI _emailSender;
+
     [SerializeField] private GameObject _emailPanel;
     [SerializeField] private TMP_InputField _replyInput;
     [SerializeField] private Transform _incomingEmailsParent;
@@ -43,6 +46,9 @@ public class TeamDataHandler : MonoBehaviour
         _emailPanel.SetActive(true);
         _emailText.text = _currentEmailData.Text;
         _emailTitle.text = _currentEmailData.Title;
+        _emailRecipient.text = _currentEmailData.Recipient;
+        _emailSender.text = _currentEmailData.Sender;
+        
     }
     /// <summary>
     /// Create incoming email button and email TextData

@@ -8,6 +8,7 @@ public class EmailingHandler : MonoBehaviour
     [SerializeField] private TMP_InputField _emailText;
     [SerializeField] private TMP_InputField _recipientInput;
     [SerializeField] private TMP_InputField _TitleInput;
+    [SerializeField] private TMP_InputField _senderInput;
     [SerializeField] private GameObject _notification;
 
     private PC_UI PC_UI { get { return ReferenceHandler.GetObject<PC_UI>(true); } }
@@ -19,10 +20,13 @@ public class EmailingHandler : MonoBehaviour
         email.Email = _emailText.text;
         email.Recipient = _recipientInput.text;
         email.Title = _TitleInput.text;
+        email.Sender = _senderInput.text;
 
         ClientBehaviour.Instance.SchedulePackage(email.PackObject());
         _emailText.text = "";
         _recipientInput.text = "";
+        _senderInput.text = "";
+        _TitleInput.text = "";
     }
     public void Use(EmailingContainer pCont)
     {

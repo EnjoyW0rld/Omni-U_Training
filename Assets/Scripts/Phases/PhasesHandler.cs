@@ -40,6 +40,7 @@ public class PhasesContainer : NetworkObject
     {
         Instruction = pInstruction;
     }
+    
 
     public override void DeSerialize(NetworkPacket pPacket)
     {
