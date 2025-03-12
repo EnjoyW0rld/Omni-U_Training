@@ -31,8 +31,25 @@ public class ReferenceHandler
         }
         if (!_references.ContainsKey(type))
         {
-            _references.Add(type,GameObject.FindObjectOfType<T>(pIncludeInactive));
+            _references.Add(type, GameObject.FindObjectOfType<T>(pIncludeInactive));
         }
         return (T)_references[type];
+    }
+    public static UnityEngine.Object GetObject(Type pType, bool pIncludeInactive = false)
+    {
+        if (_references == null)
+        {
+            _references = new Dictionary<Type, UnityEngine.Object>();
+            _references.Add(pType, GameObject.FindObjectOfType(pType, pIncludeInactive));
+        }
+        if (_references.ContainsKey(pType) && _references[pType] == null)
+        {
+            _references[pType] = GameObject.FindObjectOfType(pType, pIncludeInactive);
+        }
+        if (!_references.ContainsKey(pType))
+        {
+            _references.Add(pType, GameObject.FindObjectOfType(pType,pIncludeInactive));
+        }
+        return _references[pType];
     }
 }

@@ -20,6 +20,7 @@ public class RCPBase
     /// </summary>
     public void RegisterMethods()
     {
+        if(methods != null && methods.Count > 0) { return; }
         if (methods == null) methods = new Dictionary<string, MethodInfo>();
         MethodInfo[] info = this.GetType().GetMethods(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic);
         foreach (MethodInfo method in info)

@@ -8,6 +8,8 @@ public class PhasesHandler : MonoBehaviour
     private void Start()
     {
         _phaseInteractions = FindObjectsOfType<PhaseInteractionExecutor>(true);
+
+        ClientBehaviour.Instance.SchedulePackage((new RCPInvokeContainer("SendUserData")).PackObject());
     }
 
     public void CallPhaseInteraction(string pPhaseName)
@@ -40,7 +42,7 @@ public class PhasesContainer : NetworkObject
     {
         Instruction = pInstruction;
     }
-    
+
 
     public override void DeSerialize(NetworkPacket pPacket)
     {

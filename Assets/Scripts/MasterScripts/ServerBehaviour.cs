@@ -140,7 +140,7 @@ public class ServerBehaviour : MonoBehaviour
             {
                 for (int t = 0; t < _connections.Length; t++)
                 {
-                    
+
                     Debug.Log($"{_networkDriver.GetEventQueueSizeForConnection(_connections[t])} - Queeu for connection");
                     if (!_connections[t].IsCreated || _connections[t] == default) continue;
                     _networkDriver.BeginSend(NetworkPipeline.Null, _connections[t], out DataStreamWriter dataWriter);
@@ -284,8 +284,6 @@ public class ServerBehaviour : MonoBehaviour
     }
 
 
-
-
     // ---------------------
     // GET FUNCTIONS
     // ---------------------
@@ -317,13 +315,21 @@ public class ServerBehaviour : MonoBehaviour
 
     public UserData GetCurrentUserData() => GetUserDataByID(GetCurrentConnectionTeam() - 1);
     /// <summary>
-    /// ID should be your team number "- 1" for this function to work
+    /// ID should be your team number "-1" for this function to work
     /// </summary>
     /// <param name="pId"></param>
     /// <returns></returns>
     public UserData GetUserDataByID(int pId)
     {
         return _userDatas[pId];
+    }
+    [MyRCP]
+    public void SendUserData()
+    {
+        Debug.Log("Sending user data");
+        int teamNum = GetTeamByConnection(GetCurrentConnection());
+        Debug.Log($"For team number {GetUserDataByID(teamNum -1).TeamNum} amount texts is {GetUserDataByID(teamNum -1).GetEmailsCount()}");
+        ScheduleMessage(GetUserDataByID(teamNum - 1).PackObject(), teamNum);
     }
 
     private struct ScheduledMessage

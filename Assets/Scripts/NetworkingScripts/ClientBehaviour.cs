@@ -27,6 +27,7 @@ public class ClientBehaviour : MonoBehaviour
     public bool IsConnected { get; private set; }
     private int _teamNubmer;
     public int TeamNubmer { get { return _teamNubmer; } }
+    private UserData _thisData;
 
     private void Awake()
     {
@@ -111,11 +112,17 @@ public class ClientBehaviour : MonoBehaviour
                     IsConnected = true;
                     OnConnected?.Invoke();
                 }
+
             }
             return;
         }
     }
-    int fragBytesRecieved = 0;
+    private void HandleDisconnect()
+    {
+        UnityEngine.SceneManagement.SceneManager.LoadScene("Menu");
+        _instance = null;
+        Destroy(gameObject);
+    }
     private void ReadData()
     {
         DataStreamReader streamReader;
@@ -143,7 +150,6 @@ public class ClientBehaviour : MonoBehaviour
                 }
                 else if (data is FragBytes)
                 {
-                    fragBytesRecieved++;
                     DebugTextWriter.WriteOnScreen($"Recieved frag bytes");
                     if (_fragmenter.TryDefragment(data as FragBytes))
                     {
@@ -160,10 +166,22 @@ public class ClientBehaviour : MonoBehaviour
             {
                 Debug.Log("Client got disconnected from server");
                 _connection = default;
+                HandleDisconnect();
             }
         }
     }
 
+    public void UpdateUserData(UserData pData)
+    {
+        _thisData = pData;
+        PC_UI pcui = ReferenceHandler.GetObject<PC_UI>(true);
+        var emails = pData.GetEmails();
+        Debug.Log("Updating user data");
+        for (int i = 0; i < emails.Length; i++)
+        {
+            pcui.AddToArchive(emails[i],false);
+        }
+    }
     public void AssignTeam(int pTeamID)
     {
         _teamNubmer = pTeamID;
