@@ -34,7 +34,6 @@ public class MasterActions : MonoBehaviour
     public void IssueTextPhase(string pPhaseName)
     {
         PhasesContainer phasesContainer = new PhasesContainer(pPhaseName);
-        phasesContainer.Instruction = PhasesContainer.Instructions.Browser;
         NetworkPacket packet = new NetworkPacket();
         packet.Write(phasesContainer);
         ServerBehaviour.Instance.ScheduleMessage(packet);

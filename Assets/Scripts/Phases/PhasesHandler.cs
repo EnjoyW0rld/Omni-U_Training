@@ -25,10 +25,11 @@ public class PhasesHandler : MonoBehaviour
         ReferenceHandler.GetObject<PC_UI>(true).AddToArchive(pEmail);
     }
 }
+
 public class PhasesContainer : NetworkObject
 {
-    public enum Instructions { Browser, Email }
-    public Instructions Instruction;
+    public enum Instructions { Browser }
+    //public Instructions Instruction;
 
     public string PhaseName;
     public UserData.TextData Email;
@@ -38,55 +39,17 @@ public class PhasesContainer : NetworkObject
     {
         PhaseName = pPhaseName;
     }
-    public PhasesContainer(Instructions pInstruction)
-    {
-        Instruction = pInstruction;
-    }
-
-
+    
     public override void DeSerialize(NetworkPacket pPacket)
     {
-        Instruction = (Instructions)pPacket.ReadInt();
-        switch (Instruction)
-        {
-            case Instructions.Browser:
-                PhaseName = pPacket.ReadString();
-                break;
-            case Instructions.Email:
-                Email = new UserData.TextData(pPacket.ReadString(), pPacket.ReadString(), pPacket.ReadString());
-                Email.Sender = pPacket.ReadString();
-                Debug.Log(Email.Sender + " is email sender");
-                break;
-        }
+        PhaseName = pPacket.ReadString();
     }
-
     public override void Serialize(NetworkPacket pPacket)
     {
-        pPacket.WriteInt((int)Instruction);
-        switch (Instruction)
-        {
-            case Instructions.Browser:
-                pPacket.WriteString(PhaseName);
-                break;
-            case Instructions.Email:
-                pPacket.WriteString(Email.Text);
-                pPacket.WriteString(Email.Recipient);
-                pPacket.WriteString(Email.Title);
-                pPacket.WriteString(Email.Sender);
-                break;
-        }
+        pPacket.WriteString(PhaseName);
     }
-
     public override void Use()
     {
-        switch (Instruction)
-        {
-            case Instructions.Browser:
-                ReferenceHandler.GetObject<PhasesHandler>().CallPhaseInteraction(PhaseName);
-                break;
-            case Instructions.Email:
-                ReferenceHandler.GetObject<PhasesHandler>().AddEmail(Email);
-                break;
-        }
+        ReferenceHandler.GetObject<PhasesHandler>().CallPhaseInteraction(PhaseName);
     }
 }

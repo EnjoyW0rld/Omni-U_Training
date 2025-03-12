@@ -6,16 +6,20 @@ using UnityEngine;
 public class RoomNavigation : MonoBehaviour
 {
     [SerializeField] private GameObject _PCScreen;
-    [SerializeField] private GameObject _mainRoom;
+    [SerializeField] private GameObject _officeRoom1;
+    [SerializeField] private GameObject _officeRoom2;
     private Dictionary<Room, GameObject> _allRooms;
-    public enum Room { PCRoom = 0, MainRoom = 1 }
-    private int _currentRoom = 0;
+    public enum Room { PCRoom = 0, OfficeRoom1 = 1, OfficeRoom2 = 2 }
+    [SerializeField] private int _currentRoom = 0;
 
     private void Start()
     {
         _allRooms = new Dictionary<Room, GameObject> {
             { Room.PCRoom, _PCScreen },
-            { Room.MainRoom,_mainRoom} };
+            { Room.OfficeRoom1,_officeRoom1},
+            { Room.OfficeRoom2,_officeRoom2}
+            };
+        SwitchRoom(_currentRoom);
     }
     public void SwitchRoom(Room pNextRoom)
     {
@@ -26,6 +30,15 @@ public class RoomNavigation : MonoBehaviour
         _currentRoom = (int)pNextRoom;
     }
     public void SwitchRoom(int pNextRoom) => SwitchRoom((Room)pNextRoom);
+    public void GoToPrevRoom()
+    {
+        _currentRoom--;
+        if (_currentRoom < 1)
+        {
+            _currentRoom = _allRooms.Count - 1;
+        }
+        SwitchRoom(_currentRoom);
+    }
     public void GoToNextRoom()
     {
         _currentRoom++;
