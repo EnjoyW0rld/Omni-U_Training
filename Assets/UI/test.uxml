@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <ui:VisualElement style="flex-grow: 1; justify-content: flex-end; align-items: stretch; align-self: auto; flex-direction: column; flex-wrap: nowrap;">
+        <ui:VisualElement style="flex-grow: 1; flex-basis: 80%;" />
+        <ui:VisualElement name="Container" style="flex-grow: 1; justify-content: center; align-items: center; flex-basis: 20%; flex-direction: column; flex-wrap: nowrap; align-self: auto; padding-top: 20px; padding-right: 20px; padding-bottom: 20px; padding-left: 20px;">
+            <ui:Button text="какая же хуйня" parse-escape-sequences="true" display-tooltip-when-elided="true" style="width: 20%; height: 40%; align-items: stretch; justify-content: flex-start; font-size: 80%;" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
