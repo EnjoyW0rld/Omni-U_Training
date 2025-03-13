@@ -18,16 +18,18 @@ public class ClientBehaviour : MonoBehaviour
     private NetworkDriver _networkDriver;
     private NetworkConnection _connection;
 
-    public UnityEvent OnConnected;
 
     private List<NetworkPacket> _scheduledPackets;
 
     private Fragmentation _fragmenter;
-
-    public bool IsConnected { get; private set; }
-    private int _teamNubmer;
-    public int TeamNubmer { get { return _teamNubmer; } }
     private UserData _thisData;
+
+    private int _teamNubmer;
+    public bool IsConnected { get; private set; }
+    public int TeamNubmer { get { return _teamNubmer; } }
+
+    public UnityEvent OnConnected;
+    public UnityEvent OnGameStarted;
 
     private void Awake()
     {
@@ -45,6 +47,7 @@ public class ClientBehaviour : MonoBehaviour
         _networkDriver = NetworkDriver.Create(new WebSocketNetworkInterface());
         _scheduledPackets = new List<NetworkPacket>();
         Application.runInBackground = true;
+        if (OnGameStarted == null) OnGameStarted = new UnityEvent();
     }
     /// <summary>
     /// Connect to the server passing adress, uses 9001 port by default
@@ -171,6 +174,12 @@ public class ClientBehaviour : MonoBehaviour
         }
     }
 
+    [MyRCP]
+    public void StartGameForClient()
+    {
+        OnGameStarted?.Invoke();
+    }
+
     public void UpdateUserData(UserData pData)
     {
         _thisData = pData;
@@ -179,7 +188,7 @@ public class ClientBehaviour : MonoBehaviour
         Debug.Log("Updating user data");
         for (int i = 0; i < emails.Length; i++)
         {
-            pcui.AddToArchive(emails[i],false);
+            pcui.AddToArchive(emails[i], false);
         }
     }
     public void AssignTeam(int pTeamID)

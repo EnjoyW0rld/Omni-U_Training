@@ -214,6 +214,11 @@ public class ServerBehaviour : MonoBehaviour
         }
         _currentReadConnetion = default;
     }
+    /// <summary>
+    /// Assigning connection localy and sending and RCP request to assign it for the user
+    /// </summary>
+    /// <param name="pConn"></param>
+    /// <param name="pTeamId"></param>
     public void AssignConnection(NetworkConnection pConn, int pTeamId)
     {
         _teamConnectionDict[pTeamId] = pConn;

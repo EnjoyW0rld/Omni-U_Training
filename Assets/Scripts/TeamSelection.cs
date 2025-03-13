@@ -46,9 +46,6 @@ public class TeamSelection : MonoBehaviour
     {
         TeamSelectionContainer cont = new TeamSelectionContainer(TeamSelectionContainer.Instruction.ConnectRequest);
         cont.TeamId = pTeamID;
-        NetworkPacket pack = new NetworkPacket();
-        pack.Write(cont);
-
-        ClientBehaviour.Instance.SchedulePackage(pack);
+        ClientBehaviour.Instance.SchedulePackage(cont.PackObject());
     }
 }

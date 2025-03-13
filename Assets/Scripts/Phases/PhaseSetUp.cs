@@ -5,6 +5,7 @@ using UnityEngine;
 public class PhaseSetUp : MonoBehaviour
 {
     [SerializeField] private Queue<GeneralPhase> _phaseQueue;
+    [SerializeField] private Transform _nextPhasesParent;
     public UnityEngine.Events.UnityEvent OnGameStart;
 
     private bool _isStarted;
@@ -18,6 +19,11 @@ public class PhaseSetUp : MonoBehaviour
     public void AddPhase(GeneralPhase pPhase)
     {
         _phaseQueue.Enqueue(pPhase);
+        //Adding info about next phase, need to change later to propper way
+        GameObject phaseObj = new GameObject();
+        var text = phaseObj.AddComponent<TMPro.TextMeshProUGUI>();
+        text.text = pPhase.GetType().FullName;
+        phaseObj.transform.parent = _nextPhasesParent;
     }
     public void IssueNextPhase()
     {
@@ -38,6 +44,8 @@ public class PhaseSetUp : MonoBehaviour
     {
         _isStarted = true;
         OnGameStart?.Invoke();
+        RCPInvokeContainer rcp = new RCPInvokeContainer("StartGameForClient");
+        ServerBehaviour.Instance.ScheduleMessage(rcp.PackObject());
     }
 }
 public class EmailPhase : GeneralPhase
