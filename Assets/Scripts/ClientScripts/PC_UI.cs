@@ -20,10 +20,11 @@ public class PC_UI : MonoBehaviour
     }
     public void AddToArchive(UserData.TextData pEmailData, bool pCallNotification = true)
     {
-        EmailArchiveButton archiveButton = Instantiate(_emailArchiveButtonPrefab);
-        archiveButton.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = TeamDataHandler.MakeEmailTitle(pEmailData);
+        EmailArchiveButton archiveButton = Instantiate(_emailArchiveButtonPrefab,_archiveEmailsParent);
+        //archiveButton.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = TeamDataHandler.MakeEmailTitle(pEmailData);
         archiveButton.Initialize(pEmailData, _emailUI);
-        archiveButton.transform.SetParent(_archiveEmailsParent);
-        if (pCallNotification) ReferenceHandler.GetObject<NotificationHandler>(true).CallNotification(NotificationHandler.NotificationType.Email);
+        //archiveButton.transform.SetParent(_archiveEmailsParent);
+        archiveButton.transform.localScale = Vector3.one;
+        //if (pCallNotification) ReferenceHandler.GetObject<NotificationHandler>(true).CallNotification(NotificationHandler.NotificationType.Email);
     }
 }

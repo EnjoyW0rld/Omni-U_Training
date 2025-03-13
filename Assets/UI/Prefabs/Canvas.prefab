@@ -1322,7 +1322,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1806455215314481004}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2631617391624064255}
+        m_TargetAssemblyTypeName: EmailingHandler, Assembly-CSharp
+        m_MethodName: SendWrittenAction
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1603645126234997167
 GameObject:
   m_ObjectHideFlags: 0
@@ -1605,6 +1617,7 @@ GameObject:
   - component: {fileID: 4382613434006555955}
   - component: {fileID: 1923634512541622168}
   - component: {fileID: 1737190054999966275}
+  - component: {fileID: 658751724143598412}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -1632,7 +1645,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0.023, y: 1.627}
+  m_AnchoredPosition: {x: 0.023010254, y: 1.6270142}
   m_SizeDelta: {x: 3840, y: 2160}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &4382613434006555955
@@ -1698,6 +1711,23 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &658751724143598412
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1886271878200336109}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a6298c324d56a648838529e4b91211d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _emailUI: {fileID: 844267838035469318}
+  _emailArchiveButtonPrefab: {fileID: 6749633843430523366, guid: 94cf06b94e1b4420babf6d1954051576,
+    type: 3}
+  _archiveEmailsParent: {fileID: 8824086574482733634}
+  _archiveTab: {fileID: 0}
 --- !u!1 &1886391534223295224
 GameObject:
   m_ObjectHideFlags: 0
@@ -3149,8 +3179,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2808523913099481744}
   m_HandleRect: {fileID: 5044824371757786082}
   m_Direction: 2
-  m_Value: 1
-  m_Size: 1
+  m_Value: 0
+  m_Size: 0.9999072
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -3188,7 +3218,7 @@ RectTransform:
   m_Father: {fileID: 2374188481077140806}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 1, y: 0.9999072}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -4724,6 +4754,7 @@ GameObject:
   - component: {fileID: 1287214101507446371}
   - component: {fileID: 5853021284396211719}
   - component: {fileID: 1030106766681815425}
+  - component: {fileID: 844267838035469318}
   m_Layer: 5
   m_Name: EmailOpenNoReply
   m_TagString: Untagged
@@ -4798,6 +4829,24 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &844267838035469318
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5502107909172660039}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a58c13e02b77bec4ebd0b5f698e4d36f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _origianalText: {fileID: 2543074798416203227}
+  _sender: {fileID: 3142495615092302388}
+  _reply: {fileID: 0}
+  _title: {fileID: 7428121186703098906}
+  _recipient: {fileID: 1955401830060363180}
+  _backButton: {fileID: 4706684092271567643}
 --- !u!1 &5776657548477316119
 GameObject:
   m_ObjectHideFlags: 0
@@ -5066,7 +5115,7 @@ GameObject:
   - component: {fileID: 3666752809579078591}
   - component: {fileID: 7897363277321526286}
   m_Layer: 5
-  m_Name: SubjectInputField (1)
+  m_Name: TextInputField
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5262,7 +5311,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.00013361395}
+  m_AnchoredPosition: {x: 0.29275444, y: -0.15527803}
   m_SizeDelta: {x: 0, y: 300}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &5355715107847768738
@@ -5602,6 +5651,7 @@ GameObject:
   - component: {fileID: 8365909383870330033}
   - component: {fileID: 4124703511650988326}
   - component: {fileID: 5085033618062674045}
+  - component: {fileID: 2631617391624064255}
   m_Layer: 5
   m_Name: ComposeEmail
   m_TagString: Untagged
@@ -5676,6 +5726,23 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &2631617391624064255
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6809418657573545425}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 604fca3284cf750489a279ddc9449183, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _emailText: {fileID: 7897363277321526286}
+  _recipientInput: {fileID: 780283479157596198}
+  _TitleInput: {fileID: 7716806588119184620}
+  _senderInput: {fileID: 5165175818831096932}
+  _notification: {fileID: 0}
 --- !u!1 &6843922976423185814
 GameObject:
   m_ObjectHideFlags: 0

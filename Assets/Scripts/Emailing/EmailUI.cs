@@ -17,8 +17,9 @@ public class EmailUI : MonoBehaviour
     {
         _origianalText.text = pEmailText.Text;
         _sender.text = pEmailText.Sender;
-        _reply.text = pEmailText.Reply;
         _title.text = pEmailText.Title;
         _recipient.text = pEmailText.Recipient;
+        if (pEmailText.Reply != null &&  pEmailText.Reply != "")
+            _reply.text = pEmailText.Reply;
     }
 }

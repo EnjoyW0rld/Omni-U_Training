@@ -147,6 +147,7 @@ GameObject:
   - component: {fileID: 6497345371051627448}
   - component: {fileID: 7773022372580907144}
   - component: {fileID: 2871163054764998278}
+  - component: {fileID: 6749633843430523366}
   m_Layer: 5
   m_Name: Email
   m_TagString: Untagged
@@ -258,31 +259,25 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 7773022372580907144}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
+--- !u!114 &6749633843430523366
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4653136933884017606}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4418cd8ecc657a5449e7a2032bf1970f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _showEmailButton: {fileID: 2871163054764998278}
+  _archiveTitle: {fileID: 0}
+  _isPrettyUI: 1
+  _title: {fileID: 7985563264328486107}
+  _from: {fileID: 2693389965279620545}
+  _to: {fileID: 7973758045099133270}
 --- !u!1 &5292366839909915186
 GameObject:
   m_ObjectHideFlags: 0
