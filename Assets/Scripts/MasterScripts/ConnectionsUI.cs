@@ -16,7 +16,7 @@ public class ConnectionsUI : MonoBehaviour
         bool[] arr = ServerBehaviour.Instance.GetTeamNumbers();
         for (int i = 0; i < arr.Length; i++)
         {
-            _indicators[i].color = arr[i] ? Color.red : Color.green;
+            _indicators[i].color = arr[i] ? new Color(0.78f, 0.1f, 0.42f) : new Color(0.1f, 0.78f, 0.53f);
             
         }
         /*bool[] arr = ServerBehaviour.Instance.GetTeamNumbers();
