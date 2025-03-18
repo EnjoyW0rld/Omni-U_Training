@@ -44,6 +44,7 @@ public class TeamSelection : MonoBehaviour
     /// <param name="pTeamID"></param>
     public void ConnectToTeam(int pTeamID)
     {
+        if (ClientBehaviour.Instance.TeamNubmer != 0) return;
         TeamSelectionContainer cont = new TeamSelectionContainer(TeamSelectionContainer.Instruction.ConnectRequest);
         cont.TeamId = pTeamID;
         ClientBehaviour.Instance.SchedulePackage(cont.PackObject());

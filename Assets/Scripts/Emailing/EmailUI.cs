@@ -19,7 +19,12 @@ public class EmailUI : MonoBehaviour
         _sender.text = pEmailText.Sender;
         _title.text = pEmailText.Title;
         _recipient.text = pEmailText.Recipient;
-        if (pEmailText.Reply != null &&  pEmailText.Reply != "")
+        if (pEmailText.Reply != null && pEmailText.Reply != "")
+        {
+            _reply.gameObject.SetActive(true);
             _reply.text = pEmailText.Reply;
+        }
+        else
+            _reply.gameObject.SetActive(false);
     }
 }

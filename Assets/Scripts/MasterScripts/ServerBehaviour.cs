@@ -27,6 +27,7 @@ public class ServerBehaviour : MonoBehaviour
     private List<ScheduledMessage> _packetsToSend;
 
     public int ConnectionsCount { get { return _connections.Length; } }
+    public bool IsStarted { get; private set; }
 
     private void Awake()
     {
@@ -288,6 +289,15 @@ public class ServerBehaviour : MonoBehaviour
         }
     }
 
+    [MyRCP]
+    public void SendUserData()
+    {
+        Debug.Log("Sending user data");
+        int teamNum = GetTeamByConnection(GetCurrentConnection());
+        Debug.Log($"For team number {GetUserDataByID(teamNum -1).TeamNum} amount texts is {GetUserDataByID(teamNum -1).GetEmailsCount()}");
+        ScheduleMessage(GetUserDataByID(teamNum - 1).PackObject(), teamNum);
+    }
+    public void StartGame() => IsStarted = true;
 
     // ---------------------
     // GET FUNCTIONS
@@ -327,14 +337,6 @@ public class ServerBehaviour : MonoBehaviour
     public UserData GetUserDataByID(int pId)
     {
         return _userDatas[pId];
-    }
-    [MyRCP]
-    public void SendUserData()
-    {
-        Debug.Log("Sending user data");
-        int teamNum = GetTeamByConnection(GetCurrentConnection());
-        Debug.Log($"For team number {GetUserDataByID(teamNum -1).TeamNum} amount texts is {GetUserDataByID(teamNum -1).GetEmailsCount()}");
-        ScheduleMessage(GetUserDataByID(teamNum - 1).PackObject(), teamNum);
     }
 
     private struct ScheduledMessage

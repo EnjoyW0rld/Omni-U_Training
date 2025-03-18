@@ -8,7 +8,7 @@ public class PhaseSetUp : MonoBehaviour
     [SerializeField] private Transform _nextPhasesParent;
     public UnityEngine.Events.UnityEvent OnGameStart;
 
-    private bool _isStarted;
+    //private bool _isStarted;
     private float _timePassed;
     private float _timeToNextPhase;
     private void Start()
@@ -33,7 +33,7 @@ public class PhaseSetUp : MonoBehaviour
     }
     private void Update()
     {
-        if (!_isStarted) return;
+        if (!ServerBehaviour.Instance.IsStarted) return;
         _timePassed += Time.deltaTime;
         if (_timePassed > _timeToNextPhase)
         {
@@ -42,7 +42,7 @@ public class PhaseSetUp : MonoBehaviour
     }
     public void StartGame()
     {
-        _isStarted = true;
+        ServerBehaviour.Instance.StartGame();
         OnGameStart?.Invoke();
         RCPInvokeContainer rcp = new RCPInvokeContainer("StartGameForClient");
         ServerBehaviour.Instance.ScheduleMessage(rcp.PackObject());

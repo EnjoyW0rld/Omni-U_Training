@@ -105,7 +105,7 @@ public class TeamSelectionContainer : RCPBase, ISerializable
     {
         ClientBehaviour.Instance.AssignTeam(pTeam);
         Debug.Log("Team is assigned");
-        SimpleSceneManager.ChangeScene("PlayerScene");
+        //SimpleSceneManager.ChangeScene("PlayerScene");
     }
 
 }

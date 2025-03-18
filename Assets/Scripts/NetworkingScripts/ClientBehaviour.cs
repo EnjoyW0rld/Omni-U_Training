@@ -178,6 +178,7 @@ public class ClientBehaviour : MonoBehaviour
     public void StartGameForClient()
     {
         OnGameStarted?.Invoke();
+        SimpleSceneManager.ChangeScene("PlayerScene");
     }
 
     public void UpdateUserData(UserData pData)
