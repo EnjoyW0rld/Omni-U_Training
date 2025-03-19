@@ -195,5 +195,6 @@ public class ClientBehaviour : MonoBehaviour
     public void AssignTeam(int pTeamID)
     {
         _teamNubmer = pTeamID;
+        ReferenceHandler.GetObject<TeamSelection>(true).ShowStandBy();
     }
 }

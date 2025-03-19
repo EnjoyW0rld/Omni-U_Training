@@ -7,7 +7,7 @@ public class TeamSelection : MonoBehaviour
     private const int TEAMS_COUNT = 3;
     [SerializeField] private GameObject[] _teamButtons;
     [SerializeField] private string _playerSceneName;
-
+    [SerializeField] private GameObject _standByObject;
     //private bool[] _teamsInUse;
 
     private void Start()
@@ -49,4 +49,5 @@ public class TeamSelection : MonoBehaviour
         cont.TeamId = pTeamID;
         ClientBehaviour.Instance.SchedulePackage(cont.PackObject());
     }
+    public void ShowStandBy() => _standByObject.SetActive(true);
 }

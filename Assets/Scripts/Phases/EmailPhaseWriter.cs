@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using System;
 
 public class EmailPhaseWriter : MonoBehaviour
 {
@@ -10,7 +11,9 @@ public class EmailPhaseWriter : MonoBehaviour
     [SerializeField] private TMP_InputField _mailText;
     [SerializeField] private TMP_InputField _recipient;
     [SerializeField] private TMP_InputField _timeToNextPhase;
-
+    [Header("In game time")]
+    [SerializeField] private TMP_InputField _InGameMinutes;
+    [SerializeField] private TMP_InputField _inGameHours;
 
     /*public void IssuePhase()
     {
@@ -36,7 +39,13 @@ public class EmailPhaseWriter : MonoBehaviour
         PhaseSetUp phaseSetUp = ReferenceHandler.GetObject<PhaseSetUp>();
         EmailPhase emailPhase = new EmailPhase(GetTextData());
         emailPhase.TimeToIssue = int.Parse(_timeToNextPhase.text);
-        _timeToNextPhase.text = "";
+
+        emailPhase.InGameTime = int.Parse(_inGameHours.text) * 60 + int.Parse(_InGameMinutes.text);
+        CleanAllInputs();
         phaseSetUp.AddPhase(emailPhase);
+    }
+    private void CleanAllInputs()
+    {
+        _timeToNextPhase.text = "";
     }
 }

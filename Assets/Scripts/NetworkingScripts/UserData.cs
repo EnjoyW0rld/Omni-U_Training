@@ -122,3 +122,7 @@ public class UserData : NetworkObject
 
     }
 }
+public class GameData
+{
+    public int CurrentTime;
+}

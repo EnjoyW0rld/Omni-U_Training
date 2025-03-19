@@ -1,9 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class PhasesHandler : MonoBehaviour
 {
+    [SerializeField] private TextMeshProUGUI _currentTime;
     private PhaseInteractionExecutor[] _phaseInteractions;
     private void Start()
     {
@@ -24,6 +26,14 @@ public class PhasesHandler : MonoBehaviour
     {
         ReferenceHandler.GetObject<PC_UI>(true).AddToArchive(pEmail);
     }
+    /// <summary>
+    /// Updates current time UI
+    /// </summary>
+    /// <param name="time">Time needs to be in minutes</param>
+    public void UpdateCurrentTime(int time)
+    {
+        _currentTime.text = $"{time / 60}:{time % 60}";
+    }
 }
 
 public class PhasesContainer : NetworkObject
@@ -39,7 +49,7 @@ public class PhasesContainer : NetworkObject
     {
         PhaseName = pPhaseName;
     }
-    
+
     public override void DeSerialize(NetworkPacket pPacket)
     {
         PhaseName = pPacket.ReadString();
