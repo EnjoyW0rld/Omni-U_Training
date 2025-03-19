@@ -1,48 +1,52 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class NotificationHandler : MonoBehaviour
 {
-    [Serializable] public enum NotificationType { General = 1, Email = 2, Browser = 3 }
-
-    [SerializeField] private GameObject _generalNotifcation;
-    [SerializeField] private GameObject _emailNotification;
+    [SerializeField] private TextMeshProUGUI _emailNotifications;
     [SerializeField] private GameObject _browserNotification;
-    private Dictionary<NotificationType, GameObject> _notificationDict;
+    [SerializeField] private GameObject _generalEmailNotification;
+    private int _pendingEmailsNotifications;
+
     private void Start()
     {
-        _notificationDict = new Dictionary<NotificationType, GameObject>()
-        {
-            {NotificationType.General, _generalNotifcation},
-            {NotificationType.Email, _emailNotification},
-            {NotificationType.Browser, _browserNotification}
-        };
+        DrawEmailNotifications();
     }
 
-    public void CallNotification()
+    public void HideBrowserNotification()
     {
-        _generalNotifcation.SetActive(true);
+        _browserNotification.SetActive(false);
     }
-    public void HideNotification()
+    public void ShowBrowserNotification()
     {
-        _generalNotifcation.SetActive(false);
+        _browserNotification.SetActive(true);
     }
-    public void CallNotification(NotificationType pNotification)
+    //----------
+    // Email notification functions
+    //----------
+    public void AddEmailNotification()
     {
-        _notificationDict[pNotification].SetActive(true);
+        _pendingEmailsNotifications++;
+        _generalEmailNotification?.SetActive(true);
+        DrawEmailNotifications();
     }
-    public void HideNotification(NotificationType pNotification)
+    public void DecrementUnreadEmails()
     {
-        _notificationDict[pNotification].SetActive(false);
+        _pendingEmailsNotifications--;
+        _generalEmailNotification?.SetActive(false);
+        DrawEmailNotifications();
     }
-    public void CallNotification(int pNotification)
+    private void DrawEmailNotifications()
     {
-        _notificationDict[(NotificationType)pNotification].SetActive(true);
-    }
-    public void HideNotification(int pNotification)
-    {
-        _notificationDict[(NotificationType)pNotification].SetActive(false);
+        if(_pendingEmailsNotifications == 0)
+        {
+            _emailNotifications.gameObject.SetActive(false);
+            return;
+        }
+        _emailNotifications.gameObject.SetActive(true);
+        _emailNotifications.text = _pendingEmailsNotifications.ToString();
     }
 }

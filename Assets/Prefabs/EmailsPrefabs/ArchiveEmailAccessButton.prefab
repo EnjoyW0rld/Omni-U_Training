@@ -269,4 +269,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _showEmailButton: {fileID: 3510229177261854315}
-  _archiveTitle: {fileID: 8635399932655919369}
+  _title: {fileID: 8635399932655919369}
+  _from: {fileID: 8635399932655919369}
+  _to: {fileID: 8635399932655919369}
+  _notification: {fileID: 0}

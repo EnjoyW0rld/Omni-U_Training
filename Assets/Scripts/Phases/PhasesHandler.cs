@@ -19,12 +19,12 @@ public class PhasesHandler : MonoBehaviour
         for (int i = 0; i < _phaseInteractions.Length; i++)
         {
             _phaseInteractions[i].Execute(pPhaseName);
-            ReferenceHandler.GetObject<NotificationHandler>().CallNotification();
         }
     }
     public void AddEmail(UserData.TextData pEmail)
     {
         ReferenceHandler.GetObject<PC_UI>(true).AddToArchive(pEmail);
+        ReferenceHandler.GetObject<NotificationHandler>().AddEmailNotification();
     }
     /// <summary>
     /// Updates current time UI

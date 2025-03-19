@@ -9,7 +9,6 @@ public class EmailingHandler : MonoBehaviour
     [SerializeField] private TMP_InputField _recipientInput;
     [SerializeField] private TMP_InputField _TitleInput;
     [SerializeField] private TMP_InputField _senderInput;
-    [SerializeField] private GameObject _notification;
 
     private PC_UI PC_UI { get { return ReferenceHandler.GetObject<PC_UI>(true); } }
 
@@ -30,9 +29,7 @@ public class EmailingHandler : MonoBehaviour
     }
     public void Use(EmailingContainer pCont)
     {
-        if (_notification != null) _notification.SetActive(true);
-        else Debug.LogAssertion("Notification object is null");
-
+        ReferenceHandler.GetObject<NotificationHandler>(true).AddEmailNotification();
         PC_UI.AddToArchive(new UserData.TextData(pCont));
     }
 }

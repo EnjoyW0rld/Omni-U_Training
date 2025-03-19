@@ -725,9 +725,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5da4553226ce6844f8ab8dfd7778f5f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _generalNotifcation: {fileID: 288302785}
-  _emailNotification: {fileID: 0}
+  _emailNotifications: {fileID: 1446172032}
   _browserNotification: {fileID: 0}
+  _generalEmailNotification: {fileID: 288302785}
 --- !u!1 &542871484
 GameObject:
   m_ObjectHideFlags: 0
@@ -4041,7 +4041,7 @@ PrefabInstance:
     - target: {fileID: 8824086574482733634, guid: 92758fc761e684c149472c74ec3e075d,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.00062660227
+      value: 0.0008313547
       objectReference: {fileID: 0}
     - target: {fileID: 8899265568821840740, guid: 92758fc761e684c149472c74ec3e075d,
         type: 3}
@@ -4057,6 +4057,18 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 1890163689}
   m_SourcePrefab: {fileID: 100100000, guid: 92758fc761e684c149472c74ec3e075d, type: 3}
+--- !u!114 &1446172032 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5243437530818929465, guid: 92758fc761e684c149472c74ec3e075d,
+    type: 3}
+  m_PrefabInstance: {fileID: 1446172031}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1501578973
 GameObject:
   m_ObjectHideFlags: 0
